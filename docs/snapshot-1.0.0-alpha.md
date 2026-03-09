@@ -60,6 +60,17 @@ Para apoiar o ciclo alpha, o projeto agora conta com:
 - tarefas de VS Code em `.vscode/tasks.json` para build, instalação e limpeza;
 - configurações leves em `.vscode/settings.json` para importação Gradle e redução de ruído do editor.
 
+## 6.1 Artefato de instalação gerado
+
+Para permitir a primeira rodada de impressões dos stakeholders em dispositivo Android, foi gerado um APK instalável de release em:
+
+- `app/build/outputs/apk/release/listado-1.0.0-alpha-release.apk`
+
+Observação desta fase:
+
+- o artefato foi assinado localmente para viabilizar instalação durante a avaliação inicial do snapshot alpha;
+- para distribuição externa definitiva, a fase beta deve adotar estratégia própria de assinatura de release.
+
 ## 7. Critério de passagem para 1.0.0-beta
 
 A evolução para `1.0.0-beta` deve ocorrer após:
