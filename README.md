@@ -22,6 +22,13 @@ App Android em Kotlin, Jetpack Compose e Gradle para gestão offline de listas d
 - Histórico de preços por item com normalização pelo conteúdo base de cada unidade comprada
 - Pesquisa de itens para inclusão em listas
 
+## Snapshot atual
+
+- versão: `1.0.0-alpha`
+- objetivo: validar se o produto atual atende às expectativas iniciais dos stakeholders;
+- escopo deste snapshot: fluxos principais implementados, build validado e documentação consolidada;
+- fora do escopo deste snapshot: suíte formal de testes automatizados e rodada estruturada de testes com usuários.
+
 ## Rastreabilidade de mudanças do produto
 
 ### 2026-03-08 — inclusão do atributo dimensão no item
@@ -94,6 +101,14 @@ Regra incorporada:
 - o detalhe da lista passa a exibir total acumulado, total comprado e quantidade de itens marcados;
 - quando houver orçamento, a tela informa saldo restante ou excesso atual durante o planejamento e a execução;
 - as análises deixam de destacar preço normalizado na interface e passam a priorizar o preço informado na compra.
+
+### 2026-03-09 — snapshot 1.0.0-alpha é consolidado para aceite inicial
+
+Resultado incorporado:
+
+- o projeto passa a ser tratado como snapshot `1.0.0-alpha`;
+- a entrega fica posicionada como base para validação de aderência ao planejamento inicial;
+- eventuais ajustes funcionais podem ocorrer antes da etapa `1.0.0-beta`, quando testes e validações de uso terão prioridade ampliada.
 
 ## Como executar
 

@@ -106,6 +106,16 @@ Nova interpretação do produto:
 - o saldo do orçamento deve considerar o total planejado antes da execução e o total já comprado durante a compra;
 - a interface de análises deixa de enfatizar preço normalizado e passa a destacar o preço informado em cada compra.
 
+### 1.1.9 Mudança registrada em 2026-03-09
+
+O projeto foi consolidado como snapshot `1.0.0-alpha` para validação inicial com stakeholders.
+
+Nova interpretação do produto:
+
+- esta entrega deve ser lida como uma versão de aderência funcional ao planejamento inicial;
+- ajustes adicionais ainda podem ocorrer antes da fase beta;
+- a transição para `1.0.0-beta` dependerá da formalização e do aceite dos testes previstos.
+
 ### 1.2 Regras de negócio materializadas
 
 - Itens inativados não aparecem em novas listas, mas seguem íntegros no histórico.
@@ -244,3 +254,32 @@ O repositório deve seguir Conventional Commits em PT-BR. Exemplos válidos:
 | 2026-03-09 | UX e navegação | Home foi simplificada e os cards da lista passaram a expandir ao toque em toda a caixa | Redução de redundância na navegação, leitura mais limpa e interação mais direta com os itens |
 | 2026-03-09 | UX e controle | Listas abertas passaram a exibir exclusão com confirmação, e campos numéricos deixaram de reformatar a digitação em andamento | Menos interrupção no fluxo de edição, menor risco de exclusão acidental e ação de limpeza mais direta |
 | 2026-03-09 | UX e acompanhamento | O detalhe da lista passou a exibir totais e saldo do orçamento, e a análise visual passou a priorizar preço informado | Melhor acompanhamento da compra em andamento e leitura mais direta do histórico de preço |
+| 2026-03-09 | Snapshot | Consolidação da versão `1.0.0-alpha` como base de validação com stakeholders | Congelamento controlado do escopo atual, documentação do resultado e preparação para futura fase beta |
+
+## 9. Avaliação de prontidão do snapshot 1.0.0-alpha
+
+### 9.1 Resultado
+
+O estado atual do projeto é suficiente para um snapshot `1.0.0-alpha`.
+
+Justificativa:
+
+- os requisitos funcionais elicitados foram cobertos no escopo corrente;
+- as principais mudanças de domínio foram absorvidas e rastreadas;
+- o build foi validado com Gradle;
+- a interface recebeu uma rodada de refinamento para facilitar a leitura em um primeiro aceite.
+
+### 9.2 Restrições ainda assumidas
+
+- ainda não há suíte estruturada de testes automatizados no repositório;
+- a fase alpha ainda não substitui a necessidade de aceite formal por roteiro de testes;
+- o refinamento visual avançado foi conscientemente postergado.
+
+### 9.3 Próximo marco esperado
+
+Após a análise deste snapshot pelos stakeholders:
+
+1. ajustes funcionais podem ser incorporados, se necessários;
+2. os testes deverão ser desenvolvidos e aceitos;
+3. o projeto poderá evoluir para `1.0.0-beta`;
+4. em beta, os testes com usuários passam a ter papel central na validação do produto.
