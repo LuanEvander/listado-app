@@ -125,6 +125,7 @@ Resultado incorporado:
 - `app/src/main/java/br/com/listado/feature`: telas e `ViewModel`s por feature
 - `app/src/main/java/br/com/listado/ui`: navegação e tema
 - `docs/analise-tecnica.md`: análise da documentação e decisões arquiteturais
+- `docs/relatorio-1.0.0-alpha.md`: relatório consolidado do snapshot alpha alinhado ao estado atual do projeto
 
 ## Convenções adotadas
 

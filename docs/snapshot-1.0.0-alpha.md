@@ -75,3 +75,10 @@ A evolução para `1.0.0-beta` deve ocorrer após:
 O projeto está pronto para ser tratado como **snapshot `1.0.0-alpha`**.
 
 Ele já serve como base concreta para responder se o produto atual representa adequadamente a intenção inicial do negócio, preservando espaço para refinamentos controlados antes da etapa beta.
+
+## 9. Documentos relacionados
+
+- `docs/relatório-final.pdf`
+- `docs/relatorio-1.0.0-alpha.md`
+- `docs/analise-tecnica.md`
+- `README.md`
