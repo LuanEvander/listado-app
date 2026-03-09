@@ -207,7 +207,7 @@ private fun CatalogItemDialog(
         )
     }
     var description by remember(initialItem?.id) { mutableStateOf(initialItem?.description.orEmpty()) }
-    var dimension by remember(initialItem?.id) { mutableStateOf(initialItem?.dimension?.toString().orEmpty()) }
+    var dimension by remember(initialItem?.id) { mutableStateOf(initialItem?.dimension?.asDecimal().orEmpty()) }
     var selectedUnit by remember(initialItem?.id) { mutableStateOf(initialItem?.measurementUnit ?: UnitMeasure.UNIDADE) }
     var modeExpanded by remember { mutableStateOf(false) }
     var categoryExpanded by remember { mutableStateOf(false) }

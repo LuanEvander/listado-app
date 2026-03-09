@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -38,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.listado.core.model.ListStatus
 import br.com.listado.core.model.ShoppingListForm
 import br.com.listado.core.model.ShoppingListSummary
+import br.com.listado.core.util.asDecimal
 import br.com.listado.core.util.asCurrency
 import br.com.listado.core.util.toBrazilianDoubleOrNull
 import br.com.listado.ui.components.CollectMessages
@@ -55,7 +57,9 @@ fun ListsScreen(
 
     var showDialog by rememberSaveable { mutableStateOf(false) }
     var editingId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var deletingId by rememberSaveable { mutableStateOf<Long?>(null) }
     val editingItem = uiState.firstOrNull { it.id == editingId }
+    val deletingItem = uiState.firstOrNull { it.id == deletingId }
 
     Scaffold(
         topBar = {
@@ -108,11 +112,16 @@ fun ListsScreen(
                                     style = MaterialTheme.typography.labelLarge,
                                 )
                             }
-                            IconButton(onClick = {
-                                editingId = list.id
-                                showDialog = true
-                            }) {
-                                Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Editar lista")
+                            Row {
+                                IconButton(onClick = {
+                                    editingId = list.id
+                                    showDialog = true
+                                }) {
+                                    Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Editar lista")
+                                }
+                                IconButton(onClick = { deletingId = list.id }) {
+                                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Excluir lista")
+                                }
                             }
                         }
 
@@ -151,6 +160,29 @@ fun ListsScreen(
             },
         )
     }
+
+    if (deletingItem != null) {
+        AlertDialog(
+            onDismissRequest = { deletingId = null },
+            title = { Text(text = "Excluir lista") },
+            text = {
+                Text(text = "Deseja excluir a lista \"${deletingItem.name}\"? Os itens vinculados serão removidos.")
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deleteList(deletingItem.id)
+                    deletingId = null
+                }) {
+                    Text(text = "Excluir")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { deletingId = null }) {
+                    Text(text = "Cancelar")
+                }
+            },
+        )
+    }
 }
 
 @Composable
@@ -162,7 +194,7 @@ private fun ShoppingListDialog(
     var name by remember(initialItem?.id) { mutableStateOf(initialItem?.name.orEmpty()) }
     var description by remember(initialItem?.id) { mutableStateOf(initialItem?.description.orEmpty()) }
     var budget by remember(initialItem?.id) {
-        mutableStateOf(initialItem?.budgetLimit?.toString().orEmpty())
+        mutableStateOf(initialItem?.budgetLimit?.asDecimal().orEmpty())
     }
 
     AlertDialog(

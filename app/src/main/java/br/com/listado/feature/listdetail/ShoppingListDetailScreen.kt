@@ -48,7 +48,6 @@ import br.com.listado.core.model.ListStatus
 import br.com.listado.core.model.ShoppingListEntry
 import br.com.listado.core.util.asDecimal
 import br.com.listado.core.util.asCurrency
-import br.com.listado.core.util.asDateTime
 import br.com.listado.core.util.toBrazilianDoubleOrNull
 import br.com.listado.ui.components.CollectMessages
 import br.com.listado.ui.components.EmptyStateCard
@@ -187,11 +186,18 @@ private fun ShoppingListEntryCard(
     onRemove: () -> Unit,
 ) {
     var isExpanded by rememberSaveable(entry.id) { mutableStateOf(false) }
-    var quantityText by remember(entry.id, entry.quantity) { mutableStateOf(entry.quantity.toString()) }
-    var priceText by remember(entry.id, entry.unitPrice) { mutableStateOf(entry.unitPrice.toString()) }
+    var quantityText by rememberSaveable(entry.id) { mutableStateOf(entry.quantity.asDecimal()) }
+    var priceText by rememberSaveable(entry.id) { mutableStateOf(entry.unitPrice.asDecimal()) }
     val previewQuantity = quantityText.toBrazilianDoubleOrNull() ?: entry.quantity
     val previewPrice = priceText.toBrazilianDoubleOrNull() ?: entry.unitPrice
     val previewSubtotal = previewQuantity * previewPrice
+
+    LaunchedEffect(entry.id, isExpanded) {
+        if (!isExpanded) {
+            quantityText = entry.quantity.asDecimal()
+            priceText = entry.unitPrice.asDecimal()
+        }
+    }
 
     LaunchedEffect(
         quantityText,

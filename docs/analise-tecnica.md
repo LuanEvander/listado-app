@@ -86,6 +86,16 @@ Nova interpretação do produto:
 - o estado de compra do item passa a ficar evidente no topo do card por meio do checkbox;
 - a expansão do item deve acontecer ao tocar em toda a caixa, e não apenas em um controle pontual.
 
+### 1.1.7 Mudança registrada em 2026-03-09
+
+Listas abertas e formulários numéricos receberam ajustes para reduzir fricção de uso.
+
+Nova interpretação do produto:
+
+- a listagem de listas abertas passa a expor a ação de exclusão ao lado da edição;
+- a exclusão deve exigir confirmação explícita antes de remover a lista e seus itens associados;
+- campos numéricos não devem reformatar o texto enquanto o usuário ainda está digitando, para não interromper o fluxo de entrada decimal.
+
 ### 1.2 Regras de negócio materializadas
 
 - Itens inativados não aparecem em novas listas, mas seguem íntegros no histórico.
@@ -97,6 +107,7 @@ Nova interpretação do produto:
 - A edição de quantidade e preço no item da lista deve ser aplicada como uma única atualização lógica.
 - A edição expandida do item na lista deve persistir automaticamente após pausa curta de digitação.
 - A expansão e o recolhimento do item devem ocorrer ao tocar no card inteiro.
+- A entrada de números deve preservar o texto digitado até o término natural da edição.
 - Uma lista concluída não pode mais ser alterada.
 - A finalização exige ao menos um item marcado como comprado.
 - Itens pendentes podem ser mantidos ou removidos no fechamento.
@@ -124,6 +135,7 @@ Nova interpretação do produto:
 - os itens da lista passaram a oferecer visualização colapsável para reduzir ruído visual em listas longas.
 - o formulário expandido do item passou a salvar automaticamente quantidade e preço, sem botão de confirmação.
 - a home deixou de exibir ações redundantes e o checkbox do item passou a ocupar posição de maior destaque no card.
+- listas abertas passaram a exibir exclusão com confirmação, e campos numéricos deixaram de corrigir o texto prematuramente.
 
 ## 2. Pesquisa aplicada em melhores práticas Android
 
@@ -210,3 +222,4 @@ O repositório deve seguir Conventional Commits em PT-BR. Exemplos válidos:
 | 2026-03-09 | UX e consistência | Itens da lista passaram a ser colapsáveis e a atualização de quantidade/preço tornou-se atômica | Navegação em listas extensas, redução de inconsistências visuais e atualização imediata de subtotal |
 | 2026-03-09 | UX e consistência | Edição de itens da lista passou a usar salvamento automático | Menos fricção na edição, persistência automática e redução de ruído por confirmação manual |
 | 2026-03-09 | UX e navegação | Home foi simplificada e os cards da lista passaram a expandir ao toque em toda a caixa | Redução de redundância na navegação, leitura mais limpa e interação mais direta com os itens |
+| 2026-03-09 | UX e controle | Listas abertas passaram a exibir exclusão com confirmação, e campos numéricos deixaram de reformatar a digitação em andamento | Menos interrupção no fluxo de edição, menor risco de exclusão acidental e ação de limpeza mais direta |

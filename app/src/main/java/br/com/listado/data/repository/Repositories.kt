@@ -136,6 +136,11 @@ class ShoppingListRepository @Inject constructor(
         )
     }
 
+    suspend fun deleteList(listId: Long) {
+        editableList(listId)
+        shoppingListDao.deleteById(listId)
+    }
+
     suspend fun addItem(listId: Long, catalogItemId: Long) {
         val list = editableList(listId)
         val catalogItem = itemDao.getById(catalogItemId)

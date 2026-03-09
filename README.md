@@ -79,6 +79,14 @@ Regra incorporada:
 - o checkbox do item da lista passa a ocupar a área de destaque do cabeçalho do card;
 - tocar em toda a caixa do item expande ou recolhe seus detalhes.
 
+### 2026-03-09 — listas abertas ganham exclusão e edição numérica menos intrusiva
+
+Regra incorporada:
+
+- cada lista aberta passa a oferecer exclusão rápida ao lado da ação de edição;
+- a exclusão pede confirmação antes de remover a lista e seus itens vinculados;
+- campos numéricos deixam de sobrescrever a digitação do usuário com sufixos como `4.0` durante o preenchimento.
+
 ## Como executar
 
 1. Instale Android Studio e JDK 17.

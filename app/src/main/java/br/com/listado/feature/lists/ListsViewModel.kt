@@ -52,4 +52,16 @@ class ListsViewModel @Inject constructor(
             }
         }
     }
+
+    fun deleteList(listId: Long) {
+        viewModelScope.launch {
+            runCatching {
+                shoppingListRepository.deleteList(listId)
+            }.onSuccess {
+                events.emit("Lista excluída.")
+            }.onFailure { error ->
+                events.emit(error.message ?: "Não foi possível excluir a lista.")
+            }
+        }
+    }
 }
