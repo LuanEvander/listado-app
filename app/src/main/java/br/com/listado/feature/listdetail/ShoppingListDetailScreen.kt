@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import br.com.listado.core.model.ItemPurchaseMode
 import br.com.listado.core.model.ListStatus
 import br.com.listado.core.model.ShoppingListEntry
 import br.com.listado.core.util.asDecimal
@@ -143,8 +144,8 @@ fun ShoppingListDetailScreen(
                     entry = entry,
                     canEdit = details.canEdit,
                     onUpdatePurchased = { checked -> viewModel.updatePurchased(entry.id, checked) },
-                    onUpdate = { units, price ->
-                        viewModel.updateUnits(entry.id, units)
+                    onUpdate = { quantity, price ->
+                        viewModel.updateQuantity(entry.id, quantity)
                         viewModel.updateUnitPrice(entry.id, price)
                     },
                     onRemove = { viewModel.removeItem(entry.id) },
@@ -186,7 +187,7 @@ private fun ShoppingListEntryCard(
     onUpdate: (Double, Double) -> Unit,
     onRemove: () -> Unit,
 ) {
-    var unitsText by remember(entry.id, entry.units) { mutableStateOf(entry.units.toString()) }
+    var quantityText by remember(entry.id, entry.quantity) { mutableStateOf(entry.quantity.toString()) }
     var priceText by remember(entry.id, entry.unitPrice) { mutableStateOf(entry.unitPrice.toString()) }
 
     Card {
@@ -217,7 +218,13 @@ private fun ShoppingListEntryCard(
             AssistChip(
                 onClick = {},
                 label = {
-                    Text(text = "Dimensão por unidade: ${entry.itemDimension.asDecimal()} ${entry.measurementUnit.label}")
+                    Text(
+                        text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                            "Dimensão por unidade: ${entry.itemDimension?.asDecimal().orEmpty()} ${entry.measurementUnit.label}"
+                        } else {
+                            "Compra por medida variável em ${entry.measurementUnit.label}"
+                        },
+                    )
                 },
             )
             AssistChip(
@@ -230,28 +237,58 @@ private fun ShoppingListEntryCard(
 
             if (canEdit) {
                 OutlinedTextField(
-                    value = unitsText,
-                    onValueChange = { unitsText = it },
+                    value = quantityText,
+                    onValueChange = { quantityText = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = "Unidades da compra") },
-                    supportingText = { Text(text = "Quantidade de embalagens/unidades levadas") },
+                    label = {
+                        Text(
+                            text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                                "Unidades da compra"
+                            } else {
+                                "Quantidade comprada"
+                            },
+                        )
+                    },
+                    supportingText = {
+                        Text(
+                            text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                                "Quantidade de embalagens/unidades levadas"
+                            } else {
+                                "Quantidade total comprada em ${entry.measurementUnit.label}"
+                            },
+                        )
+                    },
                     singleLine = true,
                 )
                 OutlinedTextField(
                     value = priceText,
                     onValueChange = { priceText = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = "Preço por unidade do item") },
+                    label = {
+                        Text(
+                            text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                                "Preço por unidade do item"
+                            } else {
+                                "Preço por ${entry.measurementUnit.label}"
+                            },
+                        )
+                    },
                     supportingText = {
-                        Text(text = "Cada unidade contém ${entry.itemDimension.asDecimal()} ${entry.measurementUnit.label}")
+                        Text(
+                            text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                                "Cada unidade contém ${entry.itemDimension?.asDecimal().orEmpty()} ${entry.measurementUnit.label}"
+                            } else {
+                                "Ex.: preço por ${entry.measurementUnit.label} multiplicado pela quantidade comprada"
+                            },
+                        )
                     },
                     singleLine = true,
                 )
                 Button(
                     onClick = {
-                        val units = unitsText.toBrazilianDoubleOrNull() ?: return@Button
+                        val quantity = quantityText.toBrazilianDoubleOrNull() ?: return@Button
                         val price = priceText.toBrazilianDoubleOrNull() ?: return@Button
-                        onUpdate(units, price)
+                        onUpdate(quantity, price)
                     },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -294,7 +331,13 @@ private fun AddListItemDialog(
                             ) {
                                 Column(modifier = Modifier.padding(12.dp)) {
                                     Text(text = item.name, style = MaterialTheme.typography.titleMedium)
-                                    Text(text = "${item.category} • ${item.dimension.asDecimal()} ${item.measurementUnit.label} por unidade")
+                                    Text(
+                                        text = if (item.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                                            "${item.category} • ${item.dimension?.asDecimal().orEmpty()} ${item.measurementUnit.label} por unidade"
+                                        } else {
+                                            "${item.category} • vendido por ${item.measurementUnit.label}"
+                                        },
+                                    )
                                 }
                             }
                         }

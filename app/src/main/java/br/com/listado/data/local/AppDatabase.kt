@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import br.com.listado.core.model.ItemPurchaseMode
 import br.com.listado.core.model.ListStatus
 import br.com.listado.core.model.UnitMeasure
 import br.com.listado.data.local.dao.ItemDao
@@ -16,6 +17,12 @@ import br.com.listado.data.local.entity.ShoppingListEntity
 import br.com.listado.data.local.entity.ShoppingListItemEntity
 
 class AppConverters {
+
+    @TypeConverter
+    fun fromItemPurchaseMode(value: ItemPurchaseMode): String = value.name
+
+    @TypeConverter
+    fun toItemPurchaseMode(value: String): ItemPurchaseMode = ItemPurchaseMode.valueOf(value)
 
     @TypeConverter
     fun fromUnitMeasure(value: UnitMeasure): String = value.name
@@ -37,7 +44,7 @@ class AppConverters {
         ShoppingListItemEntity::class,
         PriceHistoryEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 @TypeConverters(AppConverters::class)

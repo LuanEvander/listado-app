@@ -32,7 +32,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.listado.core.model.CatalogItem
 import br.com.listado.core.model.CatalogItemForm
+import br.com.listado.core.model.ItemPurchaseMode
 import br.com.listado.core.model.ProductCategory
 import br.com.listado.core.model.UnitMeasure
 import br.com.listado.core.util.asDecimal
@@ -113,7 +113,7 @@ fun CatalogScreen(
                 item {
                     EmptyStateCard(
                         title = "Nenhum item encontrado",
-                        message = "Cadastre itens com nome, dimensão e unidade de medida para começar a montar listas.",
+                        message = "Cadastre itens com nome, categoria e modo de compra para começar a montar listas.",
                     )
                 }
             }
@@ -157,9 +157,17 @@ fun CatalogScreen(
                             label = {
                                 Text(
                                     text = if (item.isActive) {
-                                        "Dimensão: ${item.dimension.asDecimal()} ${item.measurementUnit.label} por unidade"
+                                        if (item.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                                            "Dimensão: ${item.dimension?.asDecimal().orEmpty()} ${item.measurementUnit.label} por unidade"
+                                        } else {
+                                            "Venda por ${item.measurementUnit.label} sem dimensão fixa"
+                                        }
                                     } else {
-                                        "Inativo • ${item.dimension.asDecimal()} ${item.measurementUnit.label} por unidade"
+                                        if (item.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                                            "Inativo • ${item.dimension?.asDecimal().orEmpty()} ${item.measurementUnit.label} por unidade"
+                                        } else {
+                                            "Inativo • venda por ${item.measurementUnit.label}"
+                                        }
                                     },
                                 )
                             },
@@ -190,6 +198,9 @@ private fun CatalogItemDialog(
     onSave: (CatalogItemForm) -> Unit,
 ) {
     var name by remember(initialItem?.id) { mutableStateOf(initialItem?.name.orEmpty()) }
+    var purchaseMode by remember(initialItem?.id) {
+        mutableStateOf(initialItem?.purchaseMode ?: ItemPurchaseMode.FIXED_DIMENSION)
+    }
     var selectedCategory by remember(initialItem?.id) {
         mutableStateOf(
             ProductCategory.fromLabel(initialItem?.category.orEmpty()) ?: ProductCategory.BEBIDAS,
@@ -198,6 +209,7 @@ private fun CatalogItemDialog(
     var description by remember(initialItem?.id) { mutableStateOf(initialItem?.description.orEmpty()) }
     var dimension by remember(initialItem?.id) { mutableStateOf(initialItem?.dimension?.toString().orEmpty()) }
     var selectedUnit by remember(initialItem?.id) { mutableStateOf(initialItem?.measurementUnit ?: UnitMeasure.UNIDADE) }
+    var modeExpanded by remember { mutableStateOf(false) }
     var categoryExpanded by remember { mutableStateOf(false) }
     var unitExpanded by remember { mutableStateOf(false) }
 
@@ -215,6 +227,49 @@ private fun CatalogItemDialog(
                     label = { Text(text = "Nome") },
                     singleLine = true,
                 )
+                ExposedDropdownMenuBox(
+                    expanded = modeExpanded,
+                    onExpandedChange = { modeExpanded = !modeExpanded },
+                ) {
+                    OutlinedTextField(
+                        value = purchaseMode.label,
+                        onValueChange = {},
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(),
+                        readOnly = true,
+                        label = { Text(text = "Modo de compra") },
+                        supportingText = {
+                            Text(
+                                text = if (purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                                    "Use para embalagens e unidades com conteúdo fixo"
+                                } else {
+                                    "Use para itens comprados por peso, volume ou medida variável"
+                                },
+                            )
+                        },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = modeExpanded)
+                        },
+                    )
+                    ExposedDropdownMenu(
+                        expanded = modeExpanded,
+                        onDismissRequest = { modeExpanded = false },
+                    ) {
+                        ItemPurchaseMode.entries.forEach { mode ->
+                            DropdownMenuItem(
+                                text = { Text(text = mode.label) },
+                                onClick = {
+                                    purchaseMode = mode
+                                    if (mode == ItemPurchaseMode.VARIABLE_MEASURE) {
+                                        dimension = ""
+                                    }
+                                    modeExpanded = false
+                                },
+                            )
+                        }
+                    }
+                }
                 ExposedDropdownMenuBox(
                     expanded = categoryExpanded,
                     onExpandedChange = { categoryExpanded = !categoryExpanded },
@@ -253,14 +308,16 @@ private fun CatalogItemDialog(
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text(text = "Descrição") },
                 )
-                OutlinedTextField(
-                    value = dimension,
-                    onValueChange = { dimension = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = "Dimensão por unidade") },
-                    supportingText = { Text(text = "Ex.: refrigerante 2 litros, pacote com 12 unidades") },
-                    singleLine = true,
-                )
+                if (purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                    OutlinedTextField(
+                        value = dimension,
+                        onValueChange = { dimension = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text(text = "Dimensão por unidade") },
+                        supportingText = { Text(text = "Ex.: refrigerante 2 litros, pacote com 12 unidades") },
+                        singleLine = true,
+                    )
+                }
                 ExposedDropdownMenuBox(expanded = unitExpanded, onExpandedChange = { unitExpanded = !unitExpanded }) {
                     OutlinedTextField(
                         value = selectedUnit.label,
@@ -295,7 +352,12 @@ private fun CatalogItemDialog(
                             name = name,
                             category = selectedCategory.label,
                             description = description,
-                            dimension = dimension.toBrazilianDoubleOrNull() ?: 0.0,
+                            purchaseMode = purchaseMode,
+                            dimension = if (purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                                dimension.toBrazilianDoubleOrNull()
+                            } else {
+                                null
+                            },
                             measurementUnit = selectedUnit,
                         ),
                     )

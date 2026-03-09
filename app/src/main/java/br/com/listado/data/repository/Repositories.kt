@@ -4,6 +4,7 @@ import androidx.room.withTransaction
 import br.com.listado.core.model.CatalogItem
 import br.com.listado.core.model.CatalogItemForm
 import br.com.listado.core.model.DashboardStats
+import br.com.listado.core.model.ItemPurchaseMode
 import br.com.listado.core.model.ListStatus
 import br.com.listado.core.model.PricePoint
 import br.com.listado.core.model.ProductCategory
@@ -45,7 +46,9 @@ class CatalogRepository @Inject constructor(
         require(ProductCategory.fromLabel(form.category) != null) {
             "Selecione uma categoria válida definida pelo sistema."
         }
-        require(form.dimension > 0.0) { "Informe uma dimensão maior que zero." }
+        if (form.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+            require((form.dimension ?: 0.0) > 0.0) { "Informe uma dimensão maior que zero." }
+        }
 
         val now = System.currentTimeMillis()
         val current = form.id?.let { itemDao.getById(it) }
@@ -55,7 +58,8 @@ class CatalogRepository @Inject constructor(
             name = form.name.trim(),
             category = normalizedCategory,
             description = form.description.trim(),
-            dimension = form.dimension,
+            purchaseMode = form.purchaseMode,
+            dimension = form.dimension?.takeIf { form.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION },
             measurementUnit = form.measurementUnit,
             isActive = current?.isActive ?: true,
             createdAt = current?.createdAt ?: now,
@@ -146,10 +150,11 @@ class ShoppingListRepository @Inject constructor(
                 catalogItemId = catalogItem.id,
                 itemNameSnapshot = catalogItem.name,
                 categorySnapshot = catalogItem.category,
+                purchaseModeSnapshot = catalogItem.purchaseMode,
                 itemDimensionSnapshot = catalogItem.dimension,
                 measurementUnitSnapshot = catalogItem.measurementUnit,
                 baseUnit = catalogItem.measurementUnit.baseUnit(),
-                units = 1.0,
+                quantity = 1.0,
                 unitPrice = 0.0,
                 isChecked = false,
                 orderIndex = shoppingListItemDao.getMaxOrderIndex(listId) + 1,
@@ -165,10 +170,10 @@ class ShoppingListRepository @Inject constructor(
         shoppingListDao.getById(entry.listId)?.let { touchList(it) }
     }
 
-    suspend fun updateUnits(itemId: Long, units: Double) {
-        require(units > 0.0) { "A quantidade de unidades deve ser maior que zero." }
+    suspend fun updateQuantity(itemId: Long, quantity: Double) {
+        require(quantity > 0.0) { "A quantidade deve ser maior que zero." }
         val current = editableEntry(itemId)
-        shoppingListItemDao.upsert(current.copy(units = units))
+        shoppingListItemDao.upsert(current.copy(quantity = quantity))
         shoppingListDao.getById(current.listId)?.let { touchList(it) }
     }
 
@@ -223,12 +228,16 @@ class ShoppingListRepository @Inject constructor(
                         itemNameSnapshot = entry.itemNameSnapshot,
                         categorySnapshot = entry.categorySnapshot,
                         purchasedAt = completedAt,
+                        purchaseModeSnapshot = entry.purchaseModeSnapshot,
                         itemDimensionSnapshot = entry.itemDimensionSnapshot,
                         measurementUnitSnapshot = entry.measurementUnitSnapshot,
-                        units = entry.units,
+                        quantity = entry.quantity,
                         unitPrice = entry.unitPrice,
-                        normalizedUnitPrice = entry.unitPrice /
-                            (entry.itemDimensionSnapshot * entry.measurementUnitSnapshot.factorToBaseUnit),
+                        normalizedUnitPrice = when (entry.purchaseModeSnapshot) {
+                            ItemPurchaseMode.FIXED_DIMENSION -> entry.unitPrice /
+                                ((entry.itemDimensionSnapshot ?: 0.0) * entry.measurementUnitSnapshot.factorToBaseUnit)
+                            ItemPurchaseMode.VARIABLE_MEASURE -> entry.unitPrice / entry.measurementUnitSnapshot.factorToBaseUnit
+                        },
                     )
                 }
             priceHistoryDao.insertAll(projection)
@@ -289,6 +298,7 @@ private fun ItemEntity.toModel(): CatalogItem = CatalogItem(
     name = name,
     category = category,
     description = description,
+    purchaseMode = purchaseMode,
     dimension = dimension,
     measurementUnit = measurementUnit,
     isActive = isActive,
@@ -301,10 +311,11 @@ private fun ShoppingListItemEntity.toModel(): ShoppingListEntry = ShoppingListEn
     catalogItemId = catalogItemId,
     itemName = itemNameSnapshot,
     category = categorySnapshot,
+    purchaseMode = purchaseModeSnapshot,
     itemDimension = itemDimensionSnapshot,
     measurementUnit = measurementUnitSnapshot,
     baseUnit = baseUnit,
-    units = units,
+    quantity = quantity,
     unitPrice = unitPrice,
     isChecked = isChecked,
     orderIndex = orderIndex,
@@ -341,9 +352,10 @@ private fun PriceHistoryEntity.toModel(): PricePoint = PricePoint(
     itemName = itemNameSnapshot,
     category = categorySnapshot,
     purchasedAt = purchasedAt,
+    purchaseMode = purchaseModeSnapshot,
     itemDimension = itemDimensionSnapshot,
     measurementUnit = measurementUnitSnapshot,
-    units = units,
+    quantity = quantity,
     unitPrice = unitPrice,
     normalizedUnitPrice = normalizedUnitPrice,
 )

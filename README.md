@@ -1,6 +1,6 @@
 # Listado
 
-App Android em Kotlin, Jetpack Compose e Gradle para gestão offline de listas de compras, catálogo de itens com dimensão por unidade e análises históricas de preço.
+App Android em Kotlin, Jetpack Compose e Gradle para gestão offline de listas de compras, catálogo de itens com dimensão fixa opcional e análises históricas de preço.
 
 ## Stack
 
@@ -13,7 +13,7 @@ App Android em Kotlin, Jetpack Compose e Gradle para gestão offline de listas d
 
 ## Requisitos cobertos
 
-- Cadastro, edição e inativação lógica de itens com dimensão por unidade
+- Cadastro, edição e inativação lógica de itens com dimensão fixa opcional
 - Criação e edição de listas em andamento
 - Cálculo automático de subtotal por item e total por lista
 - Controle de orçamento por lista
@@ -42,6 +42,16 @@ Regra incorporada:
 - o usuário agora escolhe a categoria a partir de uma lista fixa do sistema;
 - a mudança reduz inconsistências de cadastro e melhora a padronização da busca e da análise histórica;
 - a linha do tempo do produto passa a registrar a restrição como decisão permanente de domínio.
+
+### 2026-03-09 — itens podem ser vendidos por medida variável
+
+Regra incorporada:
+
+- itens do catálogo agora podem ser cadastrados em dois modos: `com dimensão fixa` ou `sem dimensão fixa`;
+- itens com dimensão fixa continuam usando `preço por unidade × quantidade`;
+- itens sem dimensão fixa passam a usar `preço por medida × quantidade comprada`;
+- exemplos como batata, tomate e carnes podem ser lançados com peso real, como `2,15 kg`;
+- a análise histórica continua normalizada pela unidade base da medida.
 
 ## Como executar
 

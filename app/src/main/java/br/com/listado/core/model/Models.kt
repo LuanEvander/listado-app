@@ -60,12 +60,20 @@ enum class ProductCategory(
     }
 }
 
+enum class ItemPurchaseMode(
+    val label: String,
+) {
+    FIXED_DIMENSION(label = "Com dimensão fixa"),
+    VARIABLE_MEASURE(label = "Sem dimensão fixa"),
+}
+
 data class CatalogItem(
     val id: Long,
     val name: String,
     val category: String,
     val description: String,
-    val dimension: Double,
+    val purchaseMode: ItemPurchaseMode,
+    val dimension: Double?,
     val measurementUnit: UnitMeasure,
     val isActive: Boolean,
     val createdAt: Long,
@@ -77,7 +85,8 @@ data class CatalogItemForm(
     val name: String,
     val category: String,
     val description: String,
-    val dimension: Double,
+    val purchaseMode: ItemPurchaseMode,
+    val dimension: Double?,
     val measurementUnit: UnitMeasure,
 )
 
@@ -93,18 +102,22 @@ data class ShoppingListEntry(
     val catalogItemId: Long,
     val itemName: String,
     val category: String,
-    val itemDimension: Double,
+    val purchaseMode: ItemPurchaseMode,
+    val itemDimension: Double?,
     val measurementUnit: UnitMeasure,
     val baseUnit: UnitMeasure,
-    val units: Double,
+    val quantity: Double,
     val unitPrice: Double,
     val isChecked: Boolean,
     val orderIndex: Int,
 ) {
-    val subtotal: Double = units * unitPrice
-    val contentPerUnitInBase: Double = itemDimension * measurementUnit.factorToBaseUnit
-    val totalContentInBase: Double = units * contentPerUnitInBase
-    val normalizedUnitPrice: Double = unitPrice / contentPerUnitInBase
+    val subtotal: Double = quantity * unitPrice
+    val contentPerReferenceInBase: Double = when (purchaseMode) {
+        ItemPurchaseMode.FIXED_DIMENSION -> (itemDimension ?: 0.0) * measurementUnit.factorToBaseUnit
+        ItemPurchaseMode.VARIABLE_MEASURE -> measurementUnit.factorToBaseUnit
+    }
+    val totalContentInBase: Double = quantity * contentPerReferenceInBase
+    val normalizedUnitPrice: Double = unitPrice / contentPerReferenceInBase
 }
 
 data class ShoppingListSummary(
@@ -143,9 +156,10 @@ data class PricePoint(
     val itemName: String,
     val category: String,
     val purchasedAt: Long,
-    val itemDimension: Double,
+    val purchaseMode: ItemPurchaseMode,
+    val itemDimension: Double?,
     val measurementUnit: UnitMeasure,
-    val units: Double,
+    val quantity: Double,
     val unitPrice: Double,
     val normalizedUnitPrice: Double,
 )

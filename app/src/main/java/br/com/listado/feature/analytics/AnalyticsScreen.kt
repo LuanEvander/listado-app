@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import br.com.listado.core.model.ItemPurchaseMode
 import br.com.listado.core.model.baseUnitLabel
 import br.com.listado.core.util.asDecimal
 import br.com.listado.core.util.asCurrency
@@ -150,11 +151,27 @@ fun AnalyticsScreen(
                         Text(text = point.itemName, style = MaterialTheme.typography.titleMedium)
                         Text(text = "Data: ${point.purchasedAt.asDate()}")
                         Text(
-                            text = "Dimensão por unidade: ${point.itemDimension.asDecimal()} ${point.measurementUnit.label}",
+                            text = if (point.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                                "Dimensão por unidade: ${point.itemDimension?.asDecimal().orEmpty()} ${point.measurementUnit.label}"
+                            } else {
+                                "Compra por medida variável em ${point.measurementUnit.label}"
+                            },
                         )
-                        Text(text = "Preço informado: ${point.unitPrice.asCurrency()} por unidade")
+                        Text(
+                            text = if (point.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                                "Preço informado: ${point.unitPrice.asCurrency()} por unidade"
+                            } else {
+                                "Preço informado: ${point.unitPrice.asCurrency()} por ${point.measurementUnit.label}"
+                            },
+                        )
                         Text(text = "Preço normalizado: ${point.normalizedUnitPrice.asCurrency()} / ${point.measurementUnit.baseUnitLabel()}")
-                        Text(text = "Unidades compradas: ${point.units.asDecimal()}")
+                        Text(
+                            text = if (point.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                                "Unidades compradas: ${point.quantity.asDecimal()}"
+                            } else {
+                                "Quantidade comprada: ${point.quantity.asDecimal()} ${point.measurementUnit.label}"
+                            },
+                        )
                     }
                 }
             }

@@ -41,14 +41,26 @@ Nova interpretação do produto:
 - a padronização evita duplicidades semânticas como `Bebida`, `Bebidas` e `Refrigerantes` para o mesmo grupo de produtos;
 - a linha do tempo do produto deve registrar essa restrição como regra permanente do catálogo.
 
+### 1.1.3 Mudança registrada em 2026-03-09
+
+O catálogo passou a aceitar dois comportamentos de compra para o mesmo tipo de item.
+
+Nova interpretação do produto:
+
+- itens com dimensão fixa representam uma unidade comercial fechada, como `refrigerante 2 l`;
+- itens sem dimensão fixa representam produtos vendidos por peso, volume ou contagem variável, como `batata`, `tomate` ou `carne`;
+- para itens com dimensão fixa, o subtotal continua sendo `preço por unidade × quantidade de unidades`;
+- para itens sem dimensão fixa, o subtotal passa a ser `preço por medida × quantidade comprada`;
+- a análise histórica segue comparando preços normalizados na unidade base da medida.
+
 ### 1.2 Regras de negócio materializadas
 
 - Itens inativados não aparecem em novas listas, mas seguem íntegros no histórico.
 - Categorias de item são pré-definidas pelo sistema e não podem ser gerenciadas pelo usuário.
-- Itens do catálogo possuem dimensão e unidade de medida fixas por unidade comercial.
+- Itens do catálogo podem ter dimensão fixa por unidade comercial ou serem vendidos por medida variável.
 - A ocorrência de um item na lista é contextual e guarda “snapshot” próprio.
-- A quantidade lançada na lista representa o número de unidades compradas.
-- O preço base é calculado dividindo o preço de uma unidade comercial pelo conteúdo total dessa unidade.
+- A quantidade lançada na lista representa unidades compradas ou quantidade medida, conforme o modo do item.
+- O preço base é calculado dividindo o preço informado pelo conteúdo base de referência de cada modo de compra.
 - Uma lista concluída não pode mais ser alterada.
 - A finalização exige ao menos um item marcado como comprado.
 - Itens pendentes podem ser mantidos ou removidos no fechamento.
@@ -58,8 +70,8 @@ Nova interpretação do produto:
 
 | Requisito | Implementação |
 | --- | --- |
-| RF1-RF2 | Catálogo com cadastro, edição, inativação lógica e dimensão por unidade |
-| RF3 | Unidades `g`, `kg`, `ml`, `l` e `un` com normalização a partir da dimensão do item |
+| RF1-RF2 | Catálogo com cadastro, edição, inativação lógica, categorias fixas e dimensão opcional |
+| RF3 | Unidades `g`, `kg`, `ml`, `l` e `un` com normalização para itens dimensionados ou vendidos por medida |
 | RF4-RF6 | Criação, edição e detalhamento de listas abertas |
 | RF7-RF8 | Finalização com bloqueio de edição e histórico |
 | RF9-RF10 | Tela de análises com série histórica e métricas |
@@ -69,9 +81,10 @@ Nova interpretação do produto:
 
 - o cadastro do item passou a exigir o preenchimento da dimensão;
 - a inclusão do item na lista preserva um snapshot de `dimensão + unidade de medida`;
-- a edição do item na lista passa a alterar apenas `quantidade em unidades` e `preço por unidade`;
+- a edição do item na lista passa a alterar `quantidade` e `preço` de acordo com o modo de compra do item;
 - a escolha de unidade durante a compra deixou de ser um ajuste contextual, pois agora faz parte da definição do item do catálogo.
 - a categoria do item deixou de ser texto livre e passou a ser escolhida a partir de uma lista fixa do sistema.
+- itens fracionáveis passaram a aceitar quantidade decimal diretamente na medida de compra.
 
 ## 2. Pesquisa aplicada em melhores práticas Android
 
@@ -154,3 +167,4 @@ O repositório deve seguir Conventional Commits em PT-BR. Exemplos válidos:
 | --- | --- | --- | --- |
 | 2026-03-08 | Regra de negócio | Inclusão do atributo `dimensão` no item do catálogo | Cadastro de item, snapshot da lista, cálculo de preço base e documentação |
 | 2026-03-09 | Regra de negócio | Categorias passaram a ser pré-definidas pelo sistema | Cadastro de item, padronização do catálogo, busca e rastreabilidade do produto |
+| 2026-03-09 | Regra de negócio | Itens passaram a suportar compra por medida variável, sem dimensão fixa | Cadastro de item, detalhamento da lista, cálculo de subtotal, normalização de preço e histórico |

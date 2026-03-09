@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import br.com.listado.core.model.ItemPurchaseMode
 import br.com.listado.core.model.ListStatus
 import br.com.listado.core.model.UnitMeasure
 
@@ -16,7 +17,8 @@ data class ItemEntity(
     val name: String,
     val category: String,
     val description: String,
-    val dimension: Double,
+    val purchaseMode: ItemPurchaseMode,
+    val dimension: Double?,
     val measurementUnit: UnitMeasure,
     val isActive: Boolean = true,
     val createdAt: Long,
@@ -62,10 +64,11 @@ data class ShoppingListItemEntity(
     val catalogItemId: Long,
     val itemNameSnapshot: String,
     val categorySnapshot: String,
-    val itemDimensionSnapshot: Double,
+    val purchaseModeSnapshot: ItemPurchaseMode,
+    val itemDimensionSnapshot: Double?,
     val measurementUnitSnapshot: UnitMeasure,
     val baseUnit: UnitMeasure,
-    val units: Double,
+    val quantity: Double,
     val unitPrice: Double,
     val isChecked: Boolean,
     val orderIndex: Int,
@@ -96,9 +99,10 @@ data class PriceHistoryEntity(
     val itemNameSnapshot: String,
     val categorySnapshot: String,
     val purchasedAt: Long,
-    val itemDimensionSnapshot: Double,
+    val purchaseModeSnapshot: ItemPurchaseMode,
+    val itemDimensionSnapshot: Double?,
     val measurementUnitSnapshot: UnitMeasure,
-    val units: Double,
+    val quantity: Double,
     val unitPrice: Double,
     val normalizedUnitPrice: Double,
 )
