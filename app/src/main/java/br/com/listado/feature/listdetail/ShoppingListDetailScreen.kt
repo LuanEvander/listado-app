@@ -108,18 +108,28 @@ fun ShoppingListDetailScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item {
                 Card {
                     Column(
                         modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
+                        if (details.status == ListStatus.PLANEJAMENTO) {
+                            AssistChip(
+                                onClick = {},
+                                label = { Text(text = "Tela de planejamento") },
+                            )
+                            Text(
+                                text = "Revise itens, orçamento e totais antes de iniciar a compra.",
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
                         Text(text = details.description.ifBlank { "Sem descrição" }, style = MaterialTheme.typography.bodyLarge)
                         FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             MetricCard(
                                 title = "Total da lista",
@@ -277,7 +287,7 @@ private fun ShoppingListEntryCard(
     Card(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -304,8 +314,8 @@ private fun ShoppingListEntryCard(
             }
 
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 AssistChip(
                     onClick = { isExpanded = !isExpanded },
@@ -379,7 +389,7 @@ private fun ShoppingListEntryCard(
                     style = MaterialTheme.typography.bodySmall,
                 )
             } else if (isExpanded) {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
                         text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
                             "Quantidade comprada: ${entry.quantity.asDecimal()} unidades"
