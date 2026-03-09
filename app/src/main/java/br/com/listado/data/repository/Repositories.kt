@@ -6,6 +6,7 @@ import br.com.listado.core.model.CatalogItemForm
 import br.com.listado.core.model.DashboardStats
 import br.com.listado.core.model.ListStatus
 import br.com.listado.core.model.PricePoint
+import br.com.listado.core.model.ProductCategory
 import br.com.listado.core.model.ShoppingListDetails
 import br.com.listado.core.model.ShoppingListEntry
 import br.com.listado.core.model.ShoppingListForm
@@ -41,14 +42,18 @@ class CatalogRepository @Inject constructor(
     suspend fun saveItem(form: CatalogItemForm) {
         require(form.name.isNotBlank()) { "Informe o nome do item." }
         require(form.category.isNotBlank()) { "Informe a categoria do item." }
+        require(ProductCategory.fromLabel(form.category) != null) {
+            "Selecione uma categoria válida definida pelo sistema."
+        }
         require(form.dimension > 0.0) { "Informe uma dimensão maior que zero." }
 
         val now = System.currentTimeMillis()
         val current = form.id?.let { itemDao.getById(it) }
+        val normalizedCategory = ProductCategory.fromLabel(form.category)?.label.orEmpty()
         val entity = ItemEntity(
             id = current?.id ?: 0,
             name = form.name.trim(),
-            category = form.category.trim(),
+            category = normalizedCategory,
             description = form.description.trim(),
             dimension = form.dimension,
             measurementUnit = form.measurementUnit,

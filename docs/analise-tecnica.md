@@ -30,9 +30,21 @@ Exemplo rastreado:
 - `Refri`, `2`, `litros` → cada unidade do item contém 2 litros;
 - ao comprar `3` unidades, o usuário levou 3 garrafas de 2 litros, e não 3 litros totais.
 
+### 1.1.2 Mudança registrada em 2026-03-09
+
+O catálogo deixou de aceitar categorias livres informadas pelo usuário.
+
+Nova interpretação do produto:
+
+- as categorias são limitadas e definidas pelo sistema;
+- o cadastro de item passa a selecionar uma categoria pré-definida;
+- a padronização evita duplicidades semânticas como `Bebida`, `Bebidas` e `Refrigerantes` para o mesmo grupo de produtos;
+- a linha do tempo do produto deve registrar essa restrição como regra permanente do catálogo.
+
 ### 1.2 Regras de negócio materializadas
 
 - Itens inativados não aparecem em novas listas, mas seguem íntegros no histórico.
+- Categorias de item são pré-definidas pelo sistema e não podem ser gerenciadas pelo usuário.
 - Itens do catálogo possuem dimensão e unidade de medida fixas por unidade comercial.
 - A ocorrência de um item na lista é contextual e guarda “snapshot” próprio.
 - A quantidade lançada na lista representa o número de unidades compradas.
@@ -59,6 +71,7 @@ Exemplo rastreado:
 - a inclusão do item na lista preserva um snapshot de `dimensão + unidade de medida`;
 - a edição do item na lista passa a alterar apenas `quantidade em unidades` e `preço por unidade`;
 - a escolha de unidade durante a compra deixou de ser um ajuste contextual, pois agora faz parte da definição do item do catálogo.
+- a categoria do item deixou de ser texto livre e passou a ser escolhida a partir de uma lista fixa do sistema.
 
 ## 2. Pesquisa aplicada em melhores práticas Android
 
@@ -140,3 +153,4 @@ O repositório deve seguir Conventional Commits em PT-BR. Exemplos válidos:
 | Data | Tipo | Descrição | Impacto |
 | --- | --- | --- | --- |
 | 2026-03-08 | Regra de negócio | Inclusão do atributo `dimensão` no item do catálogo | Cadastro de item, snapshot da lista, cálculo de preço base e documentação |
+| 2026-03-09 | Regra de negócio | Categorias passaram a ser pré-definidas pelo sistema | Cadastro de item, padronização do catálogo, busca e rastreabilidade do produto |

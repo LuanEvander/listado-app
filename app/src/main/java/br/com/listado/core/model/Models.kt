@@ -30,6 +30,36 @@ enum class ListStatus {
     CONCLUIDO,
 }
 
+enum class ProductCategory(
+    val label: String,
+) {
+    ACOUGUE(label = "Açougue"),
+    BAZAR(label = "Bazar"),
+    BEBIDAS(label = "Bebidas"),
+    CAFE_DA_MANHA(label = "Café da manhã"),
+    CEREAIS_E_GRAOS(label = "Cereais e grãos"),
+    CONDIMENTOS_E_MOLHOS(label = "Condimentos e molhos"),
+    CONGELADOS(label = "Congelados"),
+    ENLATADOS_E_CONSERVAS(label = "Enlatados e conservas"),
+    FRIOS_E_LATICINIOS(label = "Frios e laticínios"),
+    HIGIENE(label = "Higiene"),
+    HORTIFRUTI(label = "Hortifruti"),
+    LIMPEZA(label = "Limpeza"),
+    MASSAS_E_BISCOITOS(label = "Massas e biscoitos"),
+    MATINAIS_E_PADARIA(label = "Matinais e padaria"),
+    MERCEARIA(label = "Mercearia"),
+    PET_SHOP(label = "Pet shop"),
+    UTILIDADES_DOMESTICAS(label = "Utilidades domésticas"),
+    ;
+
+    companion object {
+        val labels: List<String> = entries.map(ProductCategory::label)
+
+        fun fromLabel(label: String): ProductCategory? =
+            entries.firstOrNull { it.label.equals(label.trim(), ignoreCase = true) }
+    }
+}
+
 data class CatalogItem(
     val id: Long,
     val name: String,

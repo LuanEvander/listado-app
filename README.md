@@ -34,6 +34,15 @@ Regra incorporada:
 - o preço normalizado passa a considerar `preço por unidade ÷ conteúdo da unidade`;
 - variações como “Refri 600 ml” e “Refri 2 l” podem coexistir como itens distintos no catálogo.
 
+### 2026-03-09 — categorias passam a ser definidas pelo sistema
+
+Regra incorporada:
+
+- categorias do catálogo deixaram de ser texto livre;
+- o usuário agora escolhe a categoria a partir de uma lista fixa do sistema;
+- a mudança reduz inconsistências de cadastro e melhora a padronização da busca e da análise histórica;
+- a linha do tempo do produto passa a registrar a restrição como decisão permanente de domínio.
+
 ## Como executar
 
 1. Instale Android Studio e JDK 17.

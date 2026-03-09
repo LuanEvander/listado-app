@@ -44,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.listado.core.model.CatalogItem
 import br.com.listado.core.model.CatalogItemForm
+import br.com.listado.core.model.ProductCategory
 import br.com.listado.core.model.UnitMeasure
 import br.com.listado.core.util.asDecimal
 import br.com.listado.core.util.toBrazilianDoubleOrNull
@@ -189,11 +190,16 @@ private fun CatalogItemDialog(
     onSave: (CatalogItemForm) -> Unit,
 ) {
     var name by remember(initialItem?.id) { mutableStateOf(initialItem?.name.orEmpty()) }
-    var category by remember(initialItem?.id) { mutableStateOf(initialItem?.category.orEmpty()) }
+    var selectedCategory by remember(initialItem?.id) {
+        mutableStateOf(
+            ProductCategory.fromLabel(initialItem?.category.orEmpty()) ?: ProductCategory.BEBIDAS,
+        )
+    }
     var description by remember(initialItem?.id) { mutableStateOf(initialItem?.description.orEmpty()) }
     var dimension by remember(initialItem?.id) { mutableStateOf(initialItem?.dimension?.toString().orEmpty()) }
     var selectedUnit by remember(initialItem?.id) { mutableStateOf(initialItem?.measurementUnit ?: UnitMeasure.UNIDADE) }
-    var expanded by remember { mutableStateOf(false) }
+    var categoryExpanded by remember { mutableStateOf(false) }
+    var unitExpanded by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -209,13 +215,38 @@ private fun CatalogItemDialog(
                     label = { Text(text = "Nome") },
                     singleLine = true,
                 )
-                OutlinedTextField(
-                    value = category,
-                    onValueChange = { category = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = "Categoria") },
-                    singleLine = true,
-                )
+                ExposedDropdownMenuBox(
+                    expanded = categoryExpanded,
+                    onExpandedChange = { categoryExpanded = !categoryExpanded },
+                ) {
+                    OutlinedTextField(
+                        value = selectedCategory.label,
+                        onValueChange = {},
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(),
+                        readOnly = true,
+                        label = { Text(text = "Categoria") },
+                        supportingText = { Text(text = "Categorias são definidas pelo sistema") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded)
+                        },
+                    )
+                    ExposedDropdownMenu(
+                        expanded = categoryExpanded,
+                        onDismissRequest = { categoryExpanded = false },
+                    ) {
+                        ProductCategory.entries.forEach { category ->
+                            DropdownMenuItem(
+                                text = { Text(text = category.label) },
+                                onClick = {
+                                    selectedCategory = category
+                                    categoryExpanded = false
+                                },
+                            )
+                        }
+                    }
+                }
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
@@ -230,7 +261,7 @@ private fun CatalogItemDialog(
                     supportingText = { Text(text = "Ex.: refrigerante 2 litros, pacote com 12 unidades") },
                     singleLine = true,
                 )
-                ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
+                ExposedDropdownMenuBox(expanded = unitExpanded, onExpandedChange = { unitExpanded = !unitExpanded }) {
                     OutlinedTextField(
                         value = selectedUnit.label,
                         onValueChange = {},
@@ -239,15 +270,15 @@ private fun CatalogItemDialog(
                             .menuAnchor(),
                         readOnly = true,
                         label = { Text(text = "Unidade padrão") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = unitExpanded) },
                     )
-                    ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    ExposedDropdownMenu(expanded = unitExpanded, onDismissRequest = { unitExpanded = false }) {
                         UnitMeasure.entries.forEach { unit ->
                             DropdownMenuItem(
                                 text = { Text(text = "${unit.label} • ${unit.family.name.lowercase()}") },
                                 onClick = {
                                     selectedUnit = unit
-                                    expanded = false
+                                    unitExpanded = false
                                 },
                             )
                         }
@@ -262,7 +293,7 @@ private fun CatalogItemDialog(
                         CatalogItemForm(
                             id = initialItem?.id,
                             name = name,
-                            category = category,
+                            category = selectedCategory.label,
                             description = description,
                             dimension = dimension.toBrazilianDoubleOrNull() ?: 0.0,
                             measurementUnit = selectedUnit,
