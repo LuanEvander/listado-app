@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.listado.core.model.ItemPurchaseMode
-import br.com.listado.core.model.baseUnitLabel
 import br.com.listado.core.util.asDecimal
 import br.com.listado.core.util.asCurrency
 import br.com.listado.core.util.asDate
@@ -53,10 +52,10 @@ fun AnalyticsScreen(
     }
 
     val points = uiState.points
-    val average = points.map { it.normalizedUnitPrice }.average().takeIf { !it.isNaN() } ?: 0.0
-    val min = points.minOfOrNull { it.normalizedUnitPrice } ?: 0.0
-    val max = points.maxOfOrNull { it.normalizedUnitPrice } ?: 0.0
-    val latest = points.lastOrNull()?.normalizedUnitPrice ?: 0.0
+    val average = points.map { it.unitPrice }.average().takeIf { !it.isNaN() } ?: 0.0
+    val min = points.minOfOrNull { it.unitPrice } ?: 0.0
+    val max = points.maxOfOrNull { it.unitPrice } ?: 0.0
+    val latest = points.lastOrNull()?.unitPrice ?: 0.0
 
     Scaffold(
         topBar = {
@@ -131,14 +130,14 @@ fun AnalyticsScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        MetricCard(title = "Preço médio base", value = average.asCurrency(), modifier = Modifier.fillMaxWidth())
-                        MetricCard(title = "Menor preço base", value = min.asCurrency(), modifier = Modifier.fillMaxWidth())
-                        MetricCard(title = "Maior preço base", value = max.asCurrency(), modifier = Modifier.fillMaxWidth())
-                        MetricCard(title = "Último preço base", value = latest.asCurrency(), modifier = Modifier.fillMaxWidth())
+                        MetricCard(title = "Preço médio", value = average.asCurrency(), modifier = Modifier.fillMaxWidth())
+                        MetricCard(title = "Menor preço", value = min.asCurrency(), modifier = Modifier.fillMaxWidth())
+                        MetricCard(title = "Maior preço", value = max.asCurrency(), modifier = Modifier.fillMaxWidth())
+                        MetricCard(title = "Último preço", value = latest.asCurrency(), modifier = Modifier.fillMaxWidth())
                     }
                 }
                 item {
-                    SimpleLineChart(values = points.map { it.normalizedUnitPrice.toFloat() })
+                    SimpleLineChart(values = points.map { it.unitPrice.toFloat() })
                 }
             }
 
@@ -164,7 +163,6 @@ fun AnalyticsScreen(
                                 "Preço informado: ${point.unitPrice.asCurrency()} por ${point.measurementUnit.label}"
                             },
                         )
-                        Text(text = "Preço normalizado: ${point.normalizedUnitPrice.asCurrency()} / ${point.measurementUnit.baseUnitLabel()}")
                         Text(
                             text = if (point.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
                                 "Unidades compradas: ${point.quantity.asDecimal()}"

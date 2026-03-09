@@ -87,6 +87,14 @@ Regra incorporada:
 - a exclusão pede confirmação antes de remover a lista e seus itens vinculados;
 - campos numéricos deixam de sobrescrever a digitação do usuário com sufixos como `4.0` durante o preenchimento.
 
+### 2026-03-09 — detalhe da lista passa a destacar total e orçamento
+
+Regra incorporada:
+
+- o detalhe da lista passa a exibir total acumulado, total comprado e quantidade de itens marcados;
+- quando houver orçamento, a tela informa saldo restante ou excesso atual durante o planejamento e a execução;
+- as análises deixam de destacar preço normalizado na interface e passam a priorizar o preço informado na compra.
+
 ## Como executar
 
 1. Instale Android Studio e JDK 17.

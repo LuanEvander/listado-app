@@ -51,6 +51,7 @@ import br.com.listado.core.util.asCurrency
 import br.com.listado.core.util.toBrazilianDoubleOrNull
 import br.com.listado.ui.components.CollectMessages
 import br.com.listado.ui.components.EmptyStateCard
+import br.com.listado.ui.components.MetricCard
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -98,6 +99,9 @@ fun ShoppingListDetailScreen(
             }
             return@Scaffold
         }
+        val purchasedTotal = details.items.filter { it.isChecked }.sumOf { it.subtotal }
+        val budgetReference = if (details.status == ListStatus.PLANEJAMENTO) details.total else purchasedTotal
+        val budgetBalance = details.budgetLimit?.minus(budgetReference)
 
         LazyColumn(
             modifier = Modifier
@@ -113,6 +117,58 @@ fun ShoppingListDetailScreen(
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
                         Text(text = details.description.ifBlank { "Sem descrição" }, style = MaterialTheme.typography.bodyLarge)
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            MetricCard(
+                                title = "Total da lista",
+                                value = details.total.asCurrency(),
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            MetricCard(
+                                title = "Total comprado",
+                                value = purchasedTotal.asCurrency(),
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            MetricCard(
+                                title = "Itens comprados",
+                                value = "${details.purchasedCount}/${details.itemCount}",
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            details.budgetLimit?.let { budget ->
+                                MetricCard(
+                                    title = "Orçamento",
+                                    value = budget.asCurrency(),
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                                MetricCard(
+                                    title = if ((budgetBalance ?: 0.0) >= 0.0) "Saldo" else "Acima do orçamento",
+                                    value = (budgetBalance ?: 0.0).let { balance ->
+                                        if (balance >= 0.0) balance.asCurrency() else (-balance).asCurrency()
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
+                        }
+                        details.budgetLimit?.let {
+                            Text(
+                                text = if ((budgetBalance ?: 0.0) >= 0.0) {
+                                    if (details.status == ListStatus.PLANEJAMENTO) {
+                                        "Planejamento dentro do orçamento."
+                                    } else {
+                                        "Compra atual dentro do orçamento."
+                                    }
+                                } else {
+                                    if (details.status == ListStatus.PLANEJAMENTO) {
+                                        "Planejamento excedeu o orçamento definido."
+                                    } else {
+                                        "Compra atual já excedeu o orçamento definido."
+                                    }
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             if (details.status == ListStatus.PLANEJAMENTO) {
                                 Button(onClick = viewModel::startList, modifier = Modifier.weight(1f)) {

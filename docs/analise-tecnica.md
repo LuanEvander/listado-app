@@ -96,6 +96,16 @@ Nova interpretação do produto:
 - a exclusão deve exigir confirmação explícita antes de remover a lista e seus itens associados;
 - campos numéricos não devem reformatar o texto enquanto o usuário ainda está digitando, para não interromper o fluxo de entrada decimal.
 
+### 1.1.8 Mudança registrada em 2026-03-09
+
+O detalhamento da lista e a leitura das análises foram refinados para priorizar acompanhamento prático da compra.
+
+Nova interpretação do produto:
+
+- o cabeçalho da lista deve exibir total acumulado, total comprado e consumo do orçamento em tempo real;
+- o saldo do orçamento deve considerar o total planejado antes da execução e o total já comprado durante a compra;
+- a interface de análises deixa de enfatizar preço normalizado e passa a destacar o preço informado em cada compra.
+
 ### 1.2 Regras de negócio materializadas
 
 - Itens inativados não aparecem em novas listas, mas seguem íntegros no histórico.
@@ -108,6 +118,7 @@ Nova interpretação do produto:
 - A edição expandida do item na lista deve persistir automaticamente após pausa curta de digitação.
 - A expansão e o recolhimento do item devem ocorrer ao tocar no card inteiro.
 - A entrada de números deve preservar o texto digitado até o término natural da edição.
+- A lista deve informar total acumulado e posição em relação ao orçamento durante o acompanhamento da compra.
 - Uma lista concluída não pode mais ser alterada.
 - A finalização exige ao menos um item marcado como comprado.
 - Itens pendentes podem ser mantidos ou removidos no fechamento.
@@ -136,6 +147,7 @@ Nova interpretação do produto:
 - o formulário expandido do item passou a salvar automaticamente quantidade e preço, sem botão de confirmação.
 - a home deixou de exibir ações redundantes e o checkbox do item passou a ocupar posição de maior destaque no card.
 - listas abertas passaram a exibir exclusão com confirmação, e campos numéricos deixaram de corrigir o texto prematuramente.
+- o detalhe da lista passou a destacar total, total comprado e saldo do orçamento, enquanto a análise visual passou a usar preço informado.
 
 ## 2. Pesquisa aplicada em melhores práticas Android
 
@@ -223,3 +235,4 @@ O repositório deve seguir Conventional Commits em PT-BR. Exemplos válidos:
 | 2026-03-09 | UX e consistência | Edição de itens da lista passou a usar salvamento automático | Menos fricção na edição, persistência automática e redução de ruído por confirmação manual |
 | 2026-03-09 | UX e navegação | Home foi simplificada e os cards da lista passaram a expandir ao toque em toda a caixa | Redução de redundância na navegação, leitura mais limpa e interação mais direta com os itens |
 | 2026-03-09 | UX e controle | Listas abertas passaram a exibir exclusão com confirmação, e campos numéricos deixaram de reformatar a digitação em andamento | Menos interrupção no fluxo de edição, menor risco de exclusão acidental e ação de limpeza mais direta |
+| 2026-03-09 | UX e acompanhamento | O detalhe da lista passou a exibir totais e saldo do orçamento, e a análise visual passou a priorizar preço informado | Melhor acompanhamento da compra em andamento e leitura mais direta do histórico de preço |
