@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -75,20 +74,6 @@ fun DashboardScreen(
                     MetricCard(title = "Listas concluídas", value = uiState.completedListCount.toString(), modifier = Modifier.fillMaxWidth())
                     MetricCard(title = "Planejado agora", value = uiState.currentPlannedTotal.asCurrency(), modifier = Modifier.fillMaxWidth())
                     MetricCard(title = "Histórico comprado", value = uiState.totalPurchasedValue.asCurrency(), modifier = Modifier.fillMaxWidth())
-                }
-            }
-
-            item {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Button(onClick = onOpenCatalog, modifier = Modifier.fillMaxWidth()) {
-                        Text(text = "Gerenciar catálogo")
-                    }
-                    Button(onClick = onOpenLists, modifier = Modifier.fillMaxWidth()) {
-                        Text(text = "Acompanhar listas")
-                    }
-                    Button(onClick = onOpenAnalytics, modifier = Modifier.fillMaxWidth()) {
-                        Text(text = "Explorar análises")
-                    }
                 }
             }
         }

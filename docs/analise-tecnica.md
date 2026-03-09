@@ -62,7 +62,8 @@ Nova interpretação do produto:
 - itens da lista podem ser recolhidos ou expandidos sob demanda;
 - listas extensas passam a ter navegação mais limpa, com foco nos resumos por item;
 - a atualização de `quantidade` e `preço` deve ocorrer de forma atômica para evitar estados intermediários inconsistentes;
-- o subtotal e o preço base devem responder imediatamente aos valores digitados no formulário do item.
+- o subtotal deve responder imediatamente aos valores digitados no formulário do item;
+- o rótulo intermediário de `preço base` foi removido do card do item para reduzir ambiguidade.
 
 ### 1.1.5 Mudança registrada em 2026-03-09
 
@@ -75,6 +76,16 @@ Nova interpretação do produto:
 - o feedback visual do subtotal continua imediato, enquanto a persistência ocorre em segundo plano;
 - mensagens de sucesso contínuas deixam de ser exibidas para evitar ruído durante a edição.
 
+### 1.1.6 Mudança registrada em 2026-03-09
+
+Home e cards da lista receberam ajustes de navegação e interação.
+
+Nova interpretação do produto:
+
+- a home não precisa repetir atalhos para áreas já acessíveis pela navegação principal;
+- o estado de compra do item passa a ficar evidente no topo do card por meio do checkbox;
+- a expansão do item deve acontecer ao tocar em toda a caixa, e não apenas em um controle pontual.
+
 ### 1.2 Regras de negócio materializadas
 
 - Itens inativados não aparecem em novas listas, mas seguem íntegros no histórico.
@@ -85,6 +96,7 @@ Nova interpretação do produto:
 - O preço base é calculado dividindo o preço informado pelo conteúdo base de referência de cada modo de compra.
 - A edição de quantidade e preço no item da lista deve ser aplicada como uma única atualização lógica.
 - A edição expandida do item na lista deve persistir automaticamente após pausa curta de digitação.
+- A expansão e o recolhimento do item devem ocorrer ao tocar no card inteiro.
 - Uma lista concluída não pode mais ser alterada.
 - A finalização exige ao menos um item marcado como comprado.
 - Itens pendentes podem ser mantidos ou removidos no fechamento.
@@ -111,6 +123,7 @@ Nova interpretação do produto:
 - itens fracionáveis passaram a aceitar quantidade decimal diretamente na medida de compra.
 - os itens da lista passaram a oferecer visualização colapsável para reduzir ruído visual em listas longas.
 - o formulário expandido do item passou a salvar automaticamente quantidade e preço, sem botão de confirmação.
+- a home deixou de exibir ações redundantes e o checkbox do item passou a ocupar posição de maior destaque no card.
 
 ## 2. Pesquisa aplicada em melhores práticas Android
 
@@ -196,3 +209,4 @@ O repositório deve seguir Conventional Commits em PT-BR. Exemplos válidos:
 | 2026-03-09 | Regra de negócio | Itens passaram a suportar compra por medida variável, sem dimensão fixa | Cadastro de item, detalhamento da lista, cálculo de subtotal, normalização de preço e histórico |
 | 2026-03-09 | UX e consistência | Itens da lista passaram a ser colapsáveis e a atualização de quantidade/preço tornou-se atômica | Navegação em listas extensas, redução de inconsistências visuais e atualização imediata de subtotal |
 | 2026-03-09 | UX e consistência | Edição de itens da lista passou a usar salvamento automático | Menos fricção na edição, persistência automática e redução de ruído por confirmação manual |
+| 2026-03-09 | UX e navegação | Home foi simplificada e os cards da lista passaram a expandir ao toque em toda a caixa | Redução de redundância na navegação, leitura mais limpa e interação mais direta com os itens |

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,8 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.ExpandLess
-import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
@@ -115,11 +114,6 @@ fun ShoppingListDetailScreen(
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
                         Text(text = details.description.ifBlank { "Sem descrição" }, style = MaterialTheme.typography.bodyLarge)
-                        Text(text = "Status: ${details.status.name.lowercase()}")
-                        Text(text = "Total atual: ${details.total.asCurrency()}")
-                        Text(text = details.budgetLimit?.let { "Orçamento: ${it.asCurrency()}" } ?: "Sem orçamento definido")
-                        Text(text = "Itens marcados: ${details.purchasedCount}/${details.itemCount}")
-                        Text(text = "Última atualização: ${details.updatedAt.asDateTime()}")
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             if (details.status == ListStatus.PLANEJAMENTO) {
                                 Button(onClick = viewModel::startList, modifier = Modifier.weight(1f)) {
@@ -198,11 +192,6 @@ private fun ShoppingListEntryCard(
     val previewQuantity = quantityText.toBrazilianDoubleOrNull() ?: entry.quantity
     val previewPrice = priceText.toBrazilianDoubleOrNull() ?: entry.unitPrice
     val previewSubtotal = previewQuantity * previewPrice
-    val previewNormalizedPrice = if (entry.contentPerReferenceInBase > 0.0) {
-        previewPrice / entry.contentPerReferenceInBase
-    } else {
-        0.0
-    }
 
     LaunchedEffect(
         quantityText,
@@ -223,7 +212,7 @@ private fun ShoppingListEntryCard(
         onUpdate(parsedQuantity, parsedPrice)
     }
 
-    Card {
+    Card(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -232,16 +221,17 @@ private fun ShoppingListEntryCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
                     Text(text = entry.itemName, style = MaterialTheme.typography.titleMedium)
                     Text(text = entry.category, style = MaterialTheme.typography.bodyMedium)
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    IconButton(onClick = { isExpanded = !isExpanded }) {
-                        Icon(
-                            imageVector = if (isExpanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
-                            contentDescription = if (isExpanded) "Recolher item" else "Expandir item",
-                        )
+                    Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                        Checkbox(checked = entry.isChecked, onCheckedChange = if (canEdit) onUpdatePurchased else null)
+                        Text(text = if (entry.isChecked) "Comprado" else "Pendente")
                     }
                     if (canEdit) {
                         IconButton(onClick = onRemove) {
@@ -251,12 +241,7 @@ private fun ShoppingListEntryCard(
                 }
             }
 
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Checkbox(checked = entry.isChecked, onCheckedChange = if (canEdit) onUpdatePurchased else null)
-                Text(text = if (entry.isChecked) "Comprado" else "Pendente")
-            }
-
-            androidx.compose.foundation.layout.FlowRow(
+            FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
@@ -270,12 +255,6 @@ private fun ShoppingListEntryCard(
                                 "Compra por medida variável em ${entry.measurementUnit.label}"
                             },
                         )
-                    },
-                )
-                AssistChip(
-                    onClick = { isExpanded = !isExpanded },
-                    label = {
-                        Text(text = "Preço base: ${previewNormalizedPrice.asCurrency()} / ${entry.baseUnit.label}")
                     },
                 )
                 AssistChip(

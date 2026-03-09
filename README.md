@@ -59,7 +59,8 @@ Regra incorporada:
 
 - itens de listas extensas podem ser expandidos ou recolhidos para melhorar a navegação;
 - a atualização de `quantidade × preço` passa a ocorrer em uma única operação;
-- o subtotal e o preço base exibidos no item reagem imediatamente aos valores digitados, reduzindo inconsistências visuais.
+- o subtotal exibido no item reage imediatamente aos valores digitados, reduzindo inconsistências visuais;
+- o rótulo intermediário de `preço base` foi removido do item da lista para simplificar a leitura.
 
 ### 2026-03-09 — edição de itens da lista passa a usar salvamento automático
 
@@ -69,6 +70,14 @@ Regra incorporada:
 - após uma breve pausa na digitação, os valores são persistidos automaticamente;
 - o subtotal do item continua reagindo instantaneamente durante a edição;
 - a interface evita notificações de sucesso repetitivas durante autosave.
+
+### 2026-03-09 — home e itens da lista recebem simplificações de navegação
+
+Regra incorporada:
+
+- a home deixa de exibir botões redundantes para áreas já acessíveis pela navegação principal;
+- o checkbox do item da lista passa a ocupar a área de destaque do cabeçalho do card;
+- tocar em toda a caixa do item expande ou recolhe seus detalhes.
 
 ## Como executar
 
