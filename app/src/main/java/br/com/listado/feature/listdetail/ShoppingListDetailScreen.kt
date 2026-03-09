@@ -34,6 +34,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +53,7 @@ import br.com.listado.core.util.asDateTime
 import br.com.listado.core.util.toBrazilianDoubleOrNull
 import br.com.listado.ui.components.CollectMessages
 import br.com.listado.ui.components.EmptyStateCard
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -202,6 +204,25 @@ private fun ShoppingListEntryCard(
         0.0
     }
 
+    LaunchedEffect(
+        quantityText,
+        priceText,
+        entry.quantity,
+        entry.unitPrice,
+        isExpanded,
+        canEdit,
+    ) {
+        if (!canEdit || !isExpanded) return@LaunchedEffect
+
+        val parsedQuantity = quantityText.toBrazilianDoubleOrNull() ?: return@LaunchedEffect
+        val parsedPrice = priceText.toBrazilianDoubleOrNull() ?: return@LaunchedEffect
+        if (parsedQuantity <= 0.0 || parsedPrice < 0.0) return@LaunchedEffect
+        if (parsedQuantity == entry.quantity && parsedPrice == entry.unitPrice) return@LaunchedEffect
+
+        delay(450)
+        onUpdate(parsedQuantity, parsedPrice)
+    }
+
     Card {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -280,9 +301,9 @@ private fun ShoppingListEntryCard(
                     supportingText = {
                         Text(
                             text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
-                                "Quantidade de embalagens/unidades levadas"
+                                "Quantidade de embalagens/unidades levadas • salvamento automático"
                             } else {
-                                "Quantidade total comprada em ${entry.measurementUnit.label}"
+                                "Quantidade total comprada em ${entry.measurementUnit.label} • salvamento automático"
                             },
                         )
                     },
@@ -304,24 +325,18 @@ private fun ShoppingListEntryCard(
                     supportingText = {
                         Text(
                             text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
-                                "Cada unidade contém ${entry.itemDimension?.asDecimal().orEmpty()} ${entry.measurementUnit.label}"
+                                "Cada unidade contém ${entry.itemDimension?.asDecimal().orEmpty()} ${entry.measurementUnit.label} • salvamento automático"
                             } else {
-                                "Ex.: preço por ${entry.measurementUnit.label} multiplicado pela quantidade comprada"
+                                "Ex.: preço por ${entry.measurementUnit.label} multiplicado pela quantidade comprada • salvamento automático"
                             },
                         )
                     },
                     singleLine = true,
                 )
-                Button(
-                    onClick = {
-                        val quantity = quantityText.toBrazilianDoubleOrNull() ?: return@Button
-                        val price = priceText.toBrazilianDoubleOrNull() ?: return@Button
-                        onUpdate(quantity, price)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(text = "Atualizar item")
-                }
+                Text(
+                    text = "As alterações são salvas automaticamente após uma breve pausa na digitação.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
             } else if (isExpanded) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(

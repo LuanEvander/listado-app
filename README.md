@@ -61,6 +61,15 @@ Regra incorporada:
 - a atualização de `quantidade × preço` passa a ocorrer em uma única operação;
 - o subtotal e o preço base exibidos no item reagem imediatamente aos valores digitados, reduzindo inconsistências visuais.
 
+### 2026-03-09 — edição de itens da lista passa a usar salvamento automático
+
+Regra incorporada:
+
+- a edição de quantidade e preço deixa de depender de ação manual explícita;
+- após uma breve pausa na digitação, os valores são persistidos automaticamente;
+- o subtotal do item continua reagindo instantaneamente durante a edição;
+- a interface evita notificações de sucesso repetitivas durante autosave.
+
 ## Como executar
 
 1. Instale Android Studio e JDK 17.

@@ -64,6 +64,17 @@ Nova interpretação do produto:
 - a atualização de `quantidade` e `preço` deve ocorrer de forma atômica para evitar estados intermediários inconsistentes;
 - o subtotal e o preço base devem responder imediatamente aos valores digitados no formulário do item.
 
+### 1.1.5 Mudança registrada em 2026-03-09
+
+O formulário de edição do item na lista passou a operar com salvamento automático.
+
+Nova interpretação do produto:
+
+- o usuário não precisa mais confirmar manualmente cada alteração de quantidade e preço;
+- após uma pequena pausa na digitação, o item é persistido automaticamente;
+- o feedback visual do subtotal continua imediato, enquanto a persistência ocorre em segundo plano;
+- mensagens de sucesso contínuas deixam de ser exibidas para evitar ruído durante a edição.
+
 ### 1.2 Regras de negócio materializadas
 
 - Itens inativados não aparecem em novas listas, mas seguem íntegros no histórico.
@@ -73,6 +84,7 @@ Nova interpretação do produto:
 - A quantidade lançada na lista representa unidades compradas ou quantidade medida, conforme o modo do item.
 - O preço base é calculado dividindo o preço informado pelo conteúdo base de referência de cada modo de compra.
 - A edição de quantidade e preço no item da lista deve ser aplicada como uma única atualização lógica.
+- A edição expandida do item na lista deve persistir automaticamente após pausa curta de digitação.
 - Uma lista concluída não pode mais ser alterada.
 - A finalização exige ao menos um item marcado como comprado.
 - Itens pendentes podem ser mantidos ou removidos no fechamento.
@@ -98,6 +110,7 @@ Nova interpretação do produto:
 - a categoria do item deixou de ser texto livre e passou a ser escolhida a partir de uma lista fixa do sistema.
 - itens fracionáveis passaram a aceitar quantidade decimal diretamente na medida de compra.
 - os itens da lista passaram a oferecer visualização colapsável para reduzir ruído visual em listas longas.
+- o formulário expandido do item passou a salvar automaticamente quantidade e preço, sem botão de confirmação.
 
 ## 2. Pesquisa aplicada em melhores práticas Android
 
@@ -182,3 +195,4 @@ O repositório deve seguir Conventional Commits em PT-BR. Exemplos válidos:
 | 2026-03-09 | Regra de negócio | Categorias passaram a ser pré-definidas pelo sistema | Cadastro de item, padronização do catálogo, busca e rastreabilidade do produto |
 | 2026-03-09 | Regra de negócio | Itens passaram a suportar compra por medida variável, sem dimensão fixa | Cadastro de item, detalhamento da lista, cálculo de subtotal, normalização de preço e histórico |
 | 2026-03-09 | UX e consistência | Itens da lista passaram a ser colapsáveis e a atualização de quantidade/preço tornou-se atômica | Navegação em listas extensas, redução de inconsistências visuais e atualização imediata de subtotal |
+| 2026-03-09 | UX e consistência | Edição de itens da lista passou a usar salvamento automático | Menos fricção na edição, persistência automática e redução de ruído por confirmação manual |

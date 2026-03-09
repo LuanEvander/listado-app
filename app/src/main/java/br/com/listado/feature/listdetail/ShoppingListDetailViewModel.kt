@@ -88,8 +88,12 @@ class ShoppingListDetailViewModel @Inject constructor(
     }
 
     fun updatePricing(itemId: Long, quantity: Double, unitPrice: Double) {
-        executeMutation("Quantidade e preço atualizados.") {
-            shoppingListRepository.updatePricing(itemId, quantity, unitPrice)
+        viewModelScope.launch {
+            runCatching {
+                shoppingListRepository.updatePricing(itemId, quantity, unitPrice)
+            }.onFailure { error ->
+                events.emit(error.message ?: "Operação não concluída.")
+            }
         }
     }
 
