@@ -67,10 +67,10 @@ fun AnalyticsScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
                         OutlinedTextField(
                             value = uiState.items.firstOrNull { it.id == uiState.selectedItemId }?.name.orEmpty(),
@@ -127,8 +127,8 @@ fun AnalyticsScreen(
             } else {
                 item {
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         MetricCard(title = "Preço médio", value = average.asCurrency(), modifier = Modifier.fillMaxWidth())
                         MetricCard(title = "Menor preço", value = min.asCurrency(), modifier = Modifier.fillMaxWidth())
@@ -144,8 +144,8 @@ fun AnalyticsScreen(
             items(points, key = { "${it.itemId}-${it.purchasedAt}" }) { point ->
                 androidx.compose.material3.Card {
                     Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         Text(text = point.itemName, style = MaterialTheme.typography.titleMedium)
                         Text(text = "Data: ${point.purchasedAt.asDate()}")

@@ -45,8 +45,8 @@ fun MetricCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(text = title, style = MaterialTheme.typography.labelLarge)
             Text(text = value, style = MaterialTheme.typography.headlineSmall)
@@ -59,7 +59,7 @@ fun EmptyStateCard(
     title: String,
     message: String,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(20.dp),
+    contentPadding: PaddingValues = PaddingValues(16.dp),
 ) {
     Card(modifier = modifier.fillMaxWidth()) {
         Column(

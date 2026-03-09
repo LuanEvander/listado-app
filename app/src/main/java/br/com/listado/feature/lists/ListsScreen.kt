@@ -80,7 +80,7 @@ fun ListsScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             if (uiState.isEmpty()) {
                 item {
@@ -94,8 +94,8 @@ fun ListsScreen(
             items(uiState, key = { it.id }) { list ->
                 androidx.compose.material3.Card {
                     Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -103,7 +103,7 @@ fun ListsScreen(
                         ) {
                             Column(
                                 modifier = Modifier.weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalArrangement = Arrangement.spacedBy(2.dp),
                             ) {
                                 Text(text = list.name, style = MaterialTheme.typography.titleMedium)
                                 Text(text = list.description.ifBlank { "Sem descrição" }, style = MaterialTheme.typography.bodyMedium)
@@ -131,7 +131,7 @@ fun ListsScreen(
                             style = MaterialTheme.typography.bodyMedium,
                         )
 
-                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = { onOpenList(list.id) }, modifier = Modifier.weight(1f)) {
                                 Text(text = "Abrir")
                             }
@@ -201,7 +201,7 @@ private fun ShoppingListDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = if (initialItem == null) "Nova lista" else "Editar lista") },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },

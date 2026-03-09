@@ -198,6 +198,14 @@ Essa organização respeita o espírito de “package by feature” da documenta
 - Interface Material 3 com feedback visual por `Snackbar`, chips e estados explícitos.
 - `minSdk = 29` para compatibilidade com Android 10+.
 
+### 5.1 Direção visual sugerida para próxima iteração
+
+- usar cards tonais por contexto, como planejamento, execução e histórico;
+- introduzir estados visuais de orçamento com cores semânticas suaves para saldo e excesso;
+- criar cabeçalhos de seção mais leves com ícones pequenos e subtítulos curtos;
+- revisar botões principais para hierarquia mais clara entre ações primárias e secundárias;
+- padronizar paddings compactos de 8 dp e 12 dp para listas densas de uso frequente.
+
 ## 6. Ambiente de desenvolvimento configurado
 
 ### 6.1 Ferramentas-alvo

@@ -45,7 +45,7 @@ fun DashboardScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
                 Column(
@@ -66,8 +66,8 @@ fun DashboardScreen(
             item {
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     MetricCard(title = "Itens ativos", value = uiState.activeItemCount.toString(), modifier = Modifier.fillMaxWidth())
                     MetricCard(title = "Listas abertas", value = uiState.openListCount.toString(), modifier = Modifier.fillMaxWidth())
