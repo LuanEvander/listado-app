@@ -37,7 +37,7 @@ class AppConverters {
         ShoppingListItemEntity::class,
         PriceHistoryEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 @TypeConverters(AppConverters::class)

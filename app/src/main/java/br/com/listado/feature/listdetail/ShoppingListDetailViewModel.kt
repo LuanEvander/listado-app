@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.listado.core.model.CatalogItem
 import br.com.listado.core.model.ShoppingListDetails
-import br.com.listado.core.model.UnitMeasure
 import br.com.listado.data.repository.CatalogRepository
 import br.com.listado.data.repository.ShoppingListRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -82,21 +81,15 @@ class ShoppingListDetailViewModel @Inject constructor(
         }
     }
 
-    fun updateQuantity(itemId: Long, quantity: Double) {
-        executeMutation("Quantidade atualizada.") {
-            shoppingListRepository.updateQuantity(itemId, quantity)
+    fun updateUnits(itemId: Long, units: Double) {
+        executeMutation("Quantidade em unidades atualizada.") {
+            shoppingListRepository.updateUnits(itemId, units)
         }
     }
 
     fun updateUnitPrice(itemId: Long, unitPrice: Double) {
         executeMutation("Preço unitário atualizado.") {
             shoppingListRepository.updateUnitPrice(itemId, unitPrice)
-        }
-    }
-
-    fun updateSelectedUnit(itemId: Long, unit: UnitMeasure) {
-        executeMutation("Unidade atualizada.") {
-            shoppingListRepository.updateSelectedUnit(itemId, unit)
         }
     }
 

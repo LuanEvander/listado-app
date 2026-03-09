@@ -45,6 +45,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.listado.core.model.CatalogItem
 import br.com.listado.core.model.CatalogItemForm
 import br.com.listado.core.model.UnitMeasure
+import br.com.listado.core.util.asDecimal
+import br.com.listado.core.util.toBrazilianDoubleOrNull
 import br.com.listado.ui.components.CollectMessages
 import br.com.listado.ui.components.EmptyStateCard
 
@@ -110,7 +112,7 @@ fun CatalogScreen(
                 item {
                     EmptyStateCard(
                         title = "Nenhum item encontrado",
-                        message = "Cadastre itens com nome, categoria e unidade de medida para começar a montar listas.",
+                        message = "Cadastre itens com nome, dimensão e unidade de medida para começar a montar listas.",
                     )
                 }
             }
@@ -154,9 +156,9 @@ fun CatalogScreen(
                             label = {
                                 Text(
                                     text = if (item.isActive) {
-                                        "Unidade padrão: ${item.defaultUnit.label}"
+                                        "Dimensão: ${item.dimension.asDecimal()} ${item.measurementUnit.label} por unidade"
                                     } else {
-                                        "Inativo • unidade: ${item.defaultUnit.label}"
+                                        "Inativo • ${item.dimension.asDecimal()} ${item.measurementUnit.label} por unidade"
                                     },
                                 )
                             },
@@ -189,7 +191,8 @@ private fun CatalogItemDialog(
     var name by remember(initialItem?.id) { mutableStateOf(initialItem?.name.orEmpty()) }
     var category by remember(initialItem?.id) { mutableStateOf(initialItem?.category.orEmpty()) }
     var description by remember(initialItem?.id) { mutableStateOf(initialItem?.description.orEmpty()) }
-    var selectedUnit by remember(initialItem?.id) { mutableStateOf(initialItem?.defaultUnit ?: UnitMeasure.UNIDADE) }
+    var dimension by remember(initialItem?.id) { mutableStateOf(initialItem?.dimension?.toString().orEmpty()) }
+    var selectedUnit by remember(initialItem?.id) { mutableStateOf(initialItem?.measurementUnit ?: UnitMeasure.UNIDADE) }
     var expanded by remember { mutableStateOf(false) }
 
     AlertDialog(
@@ -218,6 +221,14 @@ private fun CatalogItemDialog(
                     onValueChange = { description = it },
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text(text = "Descrição") },
+                )
+                OutlinedTextField(
+                    value = dimension,
+                    onValueChange = { dimension = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text(text = "Dimensão por unidade") },
+                    supportingText = { Text(text = "Ex.: refrigerante 2 litros, pacote com 12 unidades") },
+                    singleLine = true,
                 )
                 ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
                     OutlinedTextField(
@@ -253,7 +264,8 @@ private fun CatalogItemDialog(
                             name = name,
                             category = category,
                             description = description,
-                            defaultUnit = selectedUnit,
+                            dimension = dimension.toBrazilianDoubleOrNull() ?: 0.0,
+                            measurementUnit = selectedUnit,
                         ),
                     )
                 },

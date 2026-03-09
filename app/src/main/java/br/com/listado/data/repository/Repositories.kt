@@ -10,6 +10,7 @@ import br.com.listado.core.model.ShoppingListDetails
 import br.com.listado.core.model.ShoppingListEntry
 import br.com.listado.core.model.ShoppingListForm
 import br.com.listado.core.model.ShoppingListSummary
+import br.com.listado.core.model.baseUnit
 import br.com.listado.data.local.AppDatabase
 import br.com.listado.data.local.dao.ItemDao
 import br.com.listado.data.local.dao.PriceHistoryDao
@@ -40,6 +41,7 @@ class CatalogRepository @Inject constructor(
     suspend fun saveItem(form: CatalogItemForm) {
         require(form.name.isNotBlank()) { "Informe o nome do item." }
         require(form.category.isNotBlank()) { "Informe a categoria do item." }
+        require(form.dimension > 0.0) { "Informe uma dimensão maior que zero." }
 
         val now = System.currentTimeMillis()
         val current = form.id?.let { itemDao.getById(it) }
@@ -48,7 +50,8 @@ class CatalogRepository @Inject constructor(
             name = form.name.trim(),
             category = form.category.trim(),
             description = form.description.trim(),
-            defaultUnit = form.defaultUnit,
+            dimension = form.dimension,
+            measurementUnit = form.measurementUnit,
             isActive = current?.isActive ?: true,
             createdAt = current?.createdAt ?: now,
             updatedAt = now,
@@ -138,13 +141,10 @@ class ShoppingListRepository @Inject constructor(
                 catalogItemId = catalogItem.id,
                 itemNameSnapshot = catalogItem.name,
                 categorySnapshot = catalogItem.category,
-                selectedUnit = catalogItem.defaultUnit,
-                baseUnit = when (catalogItem.defaultUnit.family) {
-                    br.com.listado.core.model.UnitFamily.MASS -> br.com.listado.core.model.UnitMeasure.GRAMA
-                    br.com.listado.core.model.UnitFamily.VOLUME -> br.com.listado.core.model.UnitMeasure.MILILITRO
-                    br.com.listado.core.model.UnitFamily.COUNT -> br.com.listado.core.model.UnitMeasure.UNIDADE
-                },
-                quantity = 1.0,
+                itemDimensionSnapshot = catalogItem.dimension,
+                measurementUnitSnapshot = catalogItem.measurementUnit,
+                baseUnit = catalogItem.measurementUnit.baseUnit(),
+                units = 1.0,
                 unitPrice = 0.0,
                 isChecked = false,
                 orderIndex = shoppingListItemDao.getMaxOrderIndex(listId) + 1,
@@ -160,10 +160,10 @@ class ShoppingListRepository @Inject constructor(
         shoppingListDao.getById(entry.listId)?.let { touchList(it) }
     }
 
-    suspend fun updateQuantity(itemId: Long, quantity: Double) {
-        require(quantity > 0.0) { "A quantidade deve ser maior que zero." }
+    suspend fun updateUnits(itemId: Long, units: Double) {
+        require(units > 0.0) { "A quantidade de unidades deve ser maior que zero." }
         val current = editableEntry(itemId)
-        shoppingListItemDao.upsert(current.copy(quantity = quantity))
+        shoppingListItemDao.upsert(current.copy(units = units))
         shoppingListDao.getById(current.listId)?.let { touchList(it) }
     }
 
@@ -171,15 +171,6 @@ class ShoppingListRepository @Inject constructor(
         require(unitPrice >= 0.0) { "O preço unitário não pode ser negativo." }
         val current = editableEntry(itemId)
         shoppingListItemDao.upsert(current.copy(unitPrice = unitPrice))
-        shoppingListDao.getById(current.listId)?.let { touchList(it) }
-    }
-
-    suspend fun updateSelectedUnit(itemId: Long, selectedUnit: br.com.listado.core.model.UnitMeasure) {
-        val current = editableEntry(itemId)
-        require(current.baseUnit.family == selectedUnit.family) {
-            "A unidade selecionada é incompatível com o item."
-        }
-        shoppingListItemDao.upsert(current.copy(selectedUnit = selectedUnit))
         shoppingListDao.getById(current.listId)?.let { touchList(it) }
     }
 
@@ -227,10 +218,12 @@ class ShoppingListRepository @Inject constructor(
                         itemNameSnapshot = entry.itemNameSnapshot,
                         categorySnapshot = entry.categorySnapshot,
                         purchasedAt = completedAt,
-                        selectedUnit = entry.selectedUnit,
-                        quantity = entry.quantity,
+                        itemDimensionSnapshot = entry.itemDimensionSnapshot,
+                        measurementUnitSnapshot = entry.measurementUnitSnapshot,
+                        units = entry.units,
                         unitPrice = entry.unitPrice,
-                        normalizedUnitPrice = entry.unitPrice / entry.selectedUnit.factorToBaseUnit,
+                        normalizedUnitPrice = entry.unitPrice /
+                            (entry.itemDimensionSnapshot * entry.measurementUnitSnapshot.factorToBaseUnit),
                     )
                 }
             priceHistoryDao.insertAll(projection)
@@ -291,7 +284,8 @@ private fun ItemEntity.toModel(): CatalogItem = CatalogItem(
     name = name,
     category = category,
     description = description,
-    defaultUnit = defaultUnit,
+    dimension = dimension,
+    measurementUnit = measurementUnit,
     isActive = isActive,
     createdAt = createdAt,
     updatedAt = updatedAt,
@@ -302,9 +296,10 @@ private fun ShoppingListItemEntity.toModel(): ShoppingListEntry = ShoppingListEn
     catalogItemId = catalogItemId,
     itemName = itemNameSnapshot,
     category = categorySnapshot,
-    selectedUnit = selectedUnit,
+    itemDimension = itemDimensionSnapshot,
+    measurementUnit = measurementUnitSnapshot,
     baseUnit = baseUnit,
-    quantity = quantity,
+    units = units,
     unitPrice = unitPrice,
     isChecked = isChecked,
     orderIndex = orderIndex,
@@ -341,8 +336,9 @@ private fun PriceHistoryEntity.toModel(): PricePoint = PricePoint(
     itemName = itemNameSnapshot,
     category = categorySnapshot,
     purchasedAt = purchasedAt,
-    selectedUnit = selectedUnit,
-    quantity = quantity,
+    itemDimension = itemDimensionSnapshot,
+    measurementUnit = measurementUnitSnapshot,
+    units = units,
     unitPrice = unitPrice,
     normalizedUnitPrice = normalizedUnitPrice,
 )

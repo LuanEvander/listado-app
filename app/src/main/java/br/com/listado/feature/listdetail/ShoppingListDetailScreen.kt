@@ -19,10 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,7 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.listado.core.model.ListStatus
 import br.com.listado.core.model.ShoppingListEntry
-import br.com.listado.core.model.UnitMeasure
+import br.com.listado.core.util.asDecimal
 import br.com.listado.core.util.asCurrency
 import br.com.listado.core.util.asDateTime
 import br.com.listado.core.util.toBrazilianDoubleOrNull
@@ -146,10 +143,9 @@ fun ShoppingListDetailScreen(
                     entry = entry,
                     canEdit = details.canEdit,
                     onUpdatePurchased = { checked -> viewModel.updatePurchased(entry.id, checked) },
-                    onUpdate = { quantity, price, unit ->
-                        viewModel.updateQuantity(entry.id, quantity)
+                    onUpdate = { units, price ->
+                        viewModel.updateUnits(entry.id, units)
                         viewModel.updateUnitPrice(entry.id, price)
-                        viewModel.updateSelectedUnit(entry.id, unit)
                     },
                     onRemove = { viewModel.removeItem(entry.id) },
                 )
@@ -187,13 +183,11 @@ private fun ShoppingListEntryCard(
     entry: ShoppingListEntry,
     canEdit: Boolean,
     onUpdatePurchased: (Boolean) -> Unit,
-    onUpdate: (Double, Double, UnitMeasure) -> Unit,
+    onUpdate: (Double, Double) -> Unit,
     onRemove: () -> Unit,
 ) {
-    var quantityText by remember(entry.id, entry.quantity) { mutableStateOf(entry.quantity.toString()) }
+    var unitsText by remember(entry.id, entry.units) { mutableStateOf(entry.units.toString()) }
     var priceText by remember(entry.id, entry.unitPrice) { mutableStateOf(entry.unitPrice.toString()) }
-    var selectedUnit by remember(entry.id, entry.selectedUnit) { mutableStateOf(entry.selectedUnit) }
-    var expanded by remember { mutableStateOf(false) }
 
     Card {
         Column(
@@ -220,52 +214,44 @@ private fun ShoppingListEntryCard(
                 Text(text = if (entry.isChecked) "Comprado" else "Pendente")
             }
 
-            AssistChip(onClick = {}, label = { Text(text = "Preço base: ${entry.normalizedUnitPrice.asCurrency()} / ${entry.baseUnit.label}") })
+            AssistChip(
+                onClick = {},
+                label = {
+                    Text(text = "Dimensão por unidade: ${entry.itemDimension.asDecimal()} ${entry.measurementUnit.label}")
+                },
+            )
+            AssistChip(
+                onClick = {},
+                label = {
+                    Text(text = "Preço base: ${entry.normalizedUnitPrice.asCurrency()} / ${entry.baseUnit.label}")
+                },
+            )
             AssistChip(onClick = {}, label = { Text(text = "Subtotal: ${entry.subtotal.asCurrency()}") })
 
             if (canEdit) {
                 OutlinedTextField(
-                    value = quantityText,
-                    onValueChange = { quantityText = it },
+                    value = unitsText,
+                    onValueChange = { unitsText = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = "Quantidade") },
+                    label = { Text(text = "Unidades da compra") },
+                    supportingText = { Text(text = "Quantidade de embalagens/unidades levadas") },
                     singleLine = true,
                 )
                 OutlinedTextField(
                     value = priceText,
                     onValueChange = { priceText = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = "Preço por ${selectedUnit.label}") },
+                    label = { Text(text = "Preço por unidade do item") },
+                    supportingText = {
+                        Text(text = "Cada unidade contém ${entry.itemDimension.asDecimal()} ${entry.measurementUnit.label}")
+                    },
                     singleLine = true,
                 )
-                ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
-                    OutlinedTextField(
-                        value = selectedUnit.label,
-                        onValueChange = {},
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(),
-                        readOnly = true,
-                        label = { Text(text = "Unidade da compra") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    )
-                    ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        UnitMeasure.compatibleOptions(entry.baseUnit.family).forEach { unit ->
-                            DropdownMenuItem(
-                                text = { Text(text = unit.label) },
-                                onClick = {
-                                    selectedUnit = unit
-                                    expanded = false
-                                },
-                            )
-                        }
-                    }
-                }
                 Button(
                     onClick = {
-                        val quantity = quantityText.toBrazilianDoubleOrNull() ?: return@Button
+                        val units = unitsText.toBrazilianDoubleOrNull() ?: return@Button
                         val price = priceText.toBrazilianDoubleOrNull() ?: return@Button
-                        onUpdate(quantity, price, selectedUnit)
+                        onUpdate(units, price)
                     },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -308,7 +294,7 @@ private fun AddListItemDialog(
                             ) {
                                 Column(modifier = Modifier.padding(12.dp)) {
                                     Text(text = item.name, style = MaterialTheme.typography.titleMedium)
-                                    Text(text = "${item.category} • ${item.defaultUnit.label}")
+                                    Text(text = "${item.category} • ${item.dimension.asDecimal()} ${item.measurementUnit.label} por unidade")
                                 }
                             }
                         }

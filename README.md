@@ -1,6 +1,6 @@
 # Listado
 
-App Android em Kotlin, Jetpack Compose e Gradle para gestão offline de listas de compras, catálogo de itens e análises históricas de preço.
+App Android em Kotlin, Jetpack Compose e Gradle para gestão offline de listas de compras, catálogo de itens com dimensão por unidade e análises históricas de preço.
 
 ## Stack
 
@@ -13,19 +13,31 @@ App Android em Kotlin, Jetpack Compose e Gradle para gestão offline de listas d
 
 ## Requisitos cobertos
 
-- Cadastro, edição e inativação lógica de itens
+- Cadastro, edição e inativação lógica de itens com dimensão por unidade
 - Criação e edição de listas em andamento
 - Cálculo automático de subtotal por item e total por lista
 - Controle de orçamento por lista
 - Bloqueio de edição após conclusão
 - Histórico de listas concluídas
-- Histórico de preços por item com normalização por unidade base
+- Histórico de preços por item com normalização pelo conteúdo base de cada unidade comprada
 - Pesquisa de itens para inclusão em listas
+
+## Rastreabilidade de mudanças do produto
+
+### 2026-03-08 — inclusão do atributo dimensão no item
+
+Regra incorporada:
+
+- cada item do catálogo passa a ter `nome`, `dimensão` e `unidade de medida`;
+- a dimensão representa o conteúdo de uma unidade do item;
+- na compra, a quantidade informada na lista representa o número de unidades/embalagens levadas;
+- o preço normalizado passa a considerar `preço por unidade ÷ conteúdo da unidade`;
+- variações como “Refri 600 ml” e “Refri 2 l” podem coexistir como itens distintos no catálogo.
 
 ## Como executar
 
 1. Instale Android Studio e JDK 17.
-2. Garanta o Android SDK com a plataforma 34.
+2. Garanta o Android SDK com a plataforma 36.
 3. Na raiz do projeto, gere/atualize o wrapper e execute:
    - `./gradlew assembleDebug`
 4. Abra a pasta no Android Studio e rode no emulador ou dispositivo Android 10+.

@@ -71,7 +71,7 @@ interface ShoppingListDao {
                sl.completedAt,
                COUNT(sli.id) AS itemCount,
                COALESCE(SUM(CASE WHEN sli.isChecked THEN 1 ELSE 0 END), 0) AS purchasedCount,
-               COALESCE(SUM(sli.quantity * sli.unitPrice), 0.0) AS total
+             COALESCE(SUM(sli.units * sli.unitPrice), 0.0) AS total
         FROM shopping_lists sl
         LEFT JOIN shopping_list_items sli ON sli.listId = sl.id
         WHERE sl.status != 'CONCLUIDO'
@@ -93,7 +93,7 @@ interface ShoppingListDao {
                sl.completedAt,
                COUNT(sli.id) AS itemCount,
                COALESCE(SUM(CASE WHEN sli.isChecked THEN 1 ELSE 0 END), 0) AS purchasedCount,
-               COALESCE(SUM(sli.quantity * sli.unitPrice), 0.0) AS total
+             COALESCE(SUM(sli.units * sli.unitPrice), 0.0) AS total
         FROM shopping_lists sl
         LEFT JOIN shopping_list_items sli ON sli.listId = sl.id
         WHERE sl.status = 'CONCLUIDO'

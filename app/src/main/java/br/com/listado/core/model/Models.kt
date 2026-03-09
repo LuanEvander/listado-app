@@ -35,7 +35,8 @@ data class CatalogItem(
     val name: String,
     val category: String,
     val description: String,
-    val defaultUnit: UnitMeasure,
+    val dimension: Double,
+    val measurementUnit: UnitMeasure,
     val isActive: Boolean,
     val createdAt: Long,
     val updatedAt: Long,
@@ -46,7 +47,8 @@ data class CatalogItemForm(
     val name: String,
     val category: String,
     val description: String,
-    val defaultUnit: UnitMeasure,
+    val dimension: Double,
+    val measurementUnit: UnitMeasure,
 )
 
 data class ShoppingListForm(
@@ -61,15 +63,18 @@ data class ShoppingListEntry(
     val catalogItemId: Long,
     val itemName: String,
     val category: String,
-    val selectedUnit: UnitMeasure,
+    val itemDimension: Double,
+    val measurementUnit: UnitMeasure,
     val baseUnit: UnitMeasure,
-    val quantity: Double,
+    val units: Double,
     val unitPrice: Double,
     val isChecked: Boolean,
     val orderIndex: Int,
 ) {
-    val subtotal: Double = quantity * unitPrice
-    val normalizedUnitPrice: Double = unitPrice / selectedUnit.factorToBaseUnit
+    val subtotal: Double = units * unitPrice
+    val contentPerUnitInBase: Double = itemDimension * measurementUnit.factorToBaseUnit
+    val totalContentInBase: Double = units * contentPerUnitInBase
+    val normalizedUnitPrice: Double = unitPrice / contentPerUnitInBase
 }
 
 data class ShoppingListSummary(
@@ -108,8 +113,9 @@ data class PricePoint(
     val itemName: String,
     val category: String,
     val purchasedAt: Long,
-    val selectedUnit: UnitMeasure,
-    val quantity: Double,
+    val itemDimension: Double,
+    val measurementUnit: UnitMeasure,
+    val units: Double,
     val unitPrice: Double,
     val normalizedUnitPrice: Double,
 )
@@ -126,4 +132,10 @@ fun UnitMeasure.baseUnitLabel(): String = when (family) {
     UnitFamily.MASS -> UnitMeasure.GRAMA.label
     UnitFamily.VOLUME -> UnitMeasure.MILILITRO.label
     UnitFamily.COUNT -> UnitMeasure.UNIDADE.label
+}
+
+fun UnitMeasure.baseUnit(): UnitMeasure = when (family) {
+    UnitFamily.MASS -> UnitMeasure.GRAMA
+    UnitFamily.VOLUME -> UnitMeasure.MILILITRO
+    UnitFamily.COUNT -> UnitMeasure.UNIDADE
 }

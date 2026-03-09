@@ -29,6 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import br.com.listado.core.model.baseUnitLabel
+import br.com.listado.core.util.asDecimal
 import br.com.listado.core.util.asCurrency
 import br.com.listado.core.util.asDate
 import br.com.listado.ui.components.EmptyStateCard
@@ -147,9 +149,12 @@ fun AnalyticsScreen(
                     ) {
                         Text(text = point.itemName, style = MaterialTheme.typography.titleMedium)
                         Text(text = "Data: ${point.purchasedAt.asDate()}")
-                        Text(text = "Preço informado: ${point.unitPrice.asCurrency()} por ${point.selectedUnit.label}")
-                        Text(text = "Preço normalizado: ${point.normalizedUnitPrice.asCurrency()}")
-                        Text(text = "Quantidade comprada: ${point.quantity}")
+                        Text(
+                            text = "Dimensão por unidade: ${point.itemDimension.asDecimal()} ${point.measurementUnit.label}",
+                        )
+                        Text(text = "Preço informado: ${point.unitPrice.asCurrency()} por unidade")
+                        Text(text = "Preço normalizado: ${point.normalizedUnitPrice.asCurrency()} / ${point.measurementUnit.baseUnitLabel()}")
+                        Text(text = "Unidades compradas: ${point.units.asDecimal()}")
                     }
                 }
             }
