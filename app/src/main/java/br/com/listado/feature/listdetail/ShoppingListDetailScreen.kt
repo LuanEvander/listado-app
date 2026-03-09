@@ -286,8 +286,8 @@ private fun ShoppingListEntryCard(
 
     Card(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -295,7 +295,7 @@ private fun ShoppingListEntryCard(
             ) {
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
                     Text(text = entry.itemName, style = MaterialTheme.typography.titleMedium)
                     Text(text = entry.category, style = MaterialTheme.typography.bodyMedium)
@@ -349,16 +349,15 @@ private fun ShoppingListEntryCard(
                             },
                         )
                     },
-                    supportingText = {
-                        Text(
-                            text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
-                                "Quantidade de embalagens/unidades levadas • salvamento automático"
-                            } else {
-                                "Quantidade total comprada em ${entry.measurementUnit.label} • salvamento automático"
-                            },
-                        )
-                    },
                     singleLine = true,
+                )
+                Text(
+                    text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                        "Informe quantas embalagens/unidades foram levadas."
+                    } else {
+                        "Informe a quantidade total comprada em ${entry.measurementUnit.label}."
+                    },
+                    style = MaterialTheme.typography.bodySmall,
                 )
                 OutlinedTextField(
                     value = priceText,
@@ -373,19 +372,18 @@ private fun ShoppingListEntryCard(
                             },
                         )
                     },
-                    supportingText = {
-                        Text(
-                            text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
-                                "Cada unidade contém ${entry.itemDimension?.asDecimal().orEmpty()} ${entry.measurementUnit.label} • salvamento automático"
-                            } else {
-                                "Ex.: preço por ${entry.measurementUnit.label} multiplicado pela quantidade comprada • salvamento automático"
-                            },
-                        )
-                    },
                     singleLine = true,
                 )
                 Text(
-                    text = "As alterações são salvas automaticamente após uma breve pausa na digitação.",
+                    text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                        "Cada unidade contém ${entry.itemDimension?.asDecimal().orEmpty()} ${entry.measurementUnit.label}."
+                    } else {
+                        "Use o valor cobrado por ${entry.measurementUnit.label}."
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                Text(
+                    text = "Salvamento automático após breve pausa.",
                     style = MaterialTheme.typography.bodySmall,
                 )
             } else if (isExpanded) {
