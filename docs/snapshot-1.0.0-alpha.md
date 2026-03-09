@@ -68,8 +68,13 @@ Para permitir a primeira rodada de impressões dos stakeholders em dispositivo A
 
 Observação desta fase:
 
-- o artefato foi assinado localmente para viabilizar instalação durante a avaliação inicial do snapshot alpha;
+- o artefato atual foi regenerado diretamente pelo Gradle com assinatura interna compatível para instalação nesta fase alpha;
 - para distribuição externa definitiva, a fase beta deve adotar estratégia própria de assinatura de release.
+
+Nota de validação:
+
+- um artefato anterior apresentou incompatibilidade de instalação em dispositivo Poco X7 Pro;
+- o APK atual substitui esse artefato e foi validado com assinatura `v2`, que é a referência a ser distribuída aos stakeholders.
 
 ## 7. Critério de passagem para 1.0.0-beta
 
