@@ -51,7 +51,6 @@ import br.com.listado.core.util.asCurrency
 import br.com.listado.core.util.toBrazilianDoubleOrNull
 import br.com.listado.ui.components.CollectMessages
 import br.com.listado.ui.components.EmptyStateCard
-import br.com.listado.ui.components.MetricCard
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -114,7 +113,7 @@ fun ShoppingListDetailScreen(
                 Card {
                     Column(
                         modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
                         if (details.status == ListStatus.PLANEJAMENTO) {
                             AssistChip(
@@ -127,37 +126,31 @@ fun ShoppingListDetailScreen(
                             )
                         }
                         Text(text = details.description.ifBlank { "Sem descrição" }, style = MaterialTheme.typography.bodyLarge)
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            MetricCard(
-                                title = "Total da lista",
-                                value = details.total.asCurrency(),
-                                modifier = Modifier.fillMaxWidth(),
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(
+                                text = "Total da lista: ${details.total.asCurrency()}",
+                                style = MaterialTheme.typography.bodyMedium,
                             )
-                            MetricCard(
-                                title = "Total comprado",
-                                value = purchasedTotal.asCurrency(),
-                                modifier = Modifier.fillMaxWidth(),
+                            Text(
+                                text = "Total comprado: ${purchasedTotal.asCurrency()}",
+                                style = MaterialTheme.typography.bodyMedium,
                             )
-                            MetricCard(
-                                title = "Itens comprados",
-                                value = "${details.purchasedCount}/${details.itemCount}",
-                                modifier = Modifier.fillMaxWidth(),
+                            Text(
+                                text = "Itens comprados: ${details.purchasedCount}/${details.itemCount}",
+                                style = MaterialTheme.typography.bodyMedium,
                             )
                             details.budgetLimit?.let { budget ->
-                                MetricCard(
-                                    title = "Orçamento",
-                                    value = budget.asCurrency(),
-                                    modifier = Modifier.fillMaxWidth(),
+                                Text(
+                                    text = "Orçamento: ${budget.asCurrency()}",
+                                    style = MaterialTheme.typography.bodyMedium,
                                 )
-                                MetricCard(
-                                    title = if ((budgetBalance ?: 0.0) >= 0.0) "Saldo" else "Acima do orçamento",
-                                    value = (budgetBalance ?: 0.0).let { balance ->
-                                        if (balance >= 0.0) balance.asCurrency() else (-balance).asCurrency()
+                                Text(
+                                    text = if ((budgetBalance ?: 0.0) >= 0.0) {
+                                        "Saldo: ${(budgetBalance ?: 0.0).asCurrency()}"
+                                    } else {
+                                        "Acima do orçamento: ${(-(budgetBalance ?: 0.0)).asCurrency()}"
                                     },
-                                    modifier = Modifier.fillMaxWidth(),
+                                    style = MaterialTheme.typography.bodyMedium,
                                 )
                             }
                         }
