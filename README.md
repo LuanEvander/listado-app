@@ -53,6 +53,14 @@ Regra incorporada:
 - exemplos como batata, tomate e carnes podem ser lançados com peso real, como `2,15 kg`;
 - a análise histórica continua normalizada pela unidade base da medida.
 
+### 2026-03-09 — itens da lista passam a ter visualização colapsável
+
+Regra incorporada:
+
+- itens de listas extensas podem ser expandidos ou recolhidos para melhorar a navegação;
+- a atualização de `quantidade × preço` passa a ocorrer em uma única operação;
+- o subtotal e o preço base exibidos no item reagem imediatamente aos valores digitados, reduzindo inconsistências visuais.
+
 ## Como executar
 
 1. Instale Android Studio e JDK 17.

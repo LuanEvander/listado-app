@@ -53,6 +53,17 @@ Nova interpretação do produto:
 - para itens sem dimensão fixa, o subtotal passa a ser `preço por medida × quantidade comprada`;
 - a análise histórica segue comparando preços normalizados na unidade base da medida.
 
+### 1.1.4 Mudança registrada em 2026-03-09
+
+O detalhamento da lista passou a priorizar legibilidade e consistência de atualização.
+
+Nova interpretação do produto:
+
+- itens da lista podem ser recolhidos ou expandidos sob demanda;
+- listas extensas passam a ter navegação mais limpa, com foco nos resumos por item;
+- a atualização de `quantidade` e `preço` deve ocorrer de forma atômica para evitar estados intermediários inconsistentes;
+- o subtotal e o preço base devem responder imediatamente aos valores digitados no formulário do item.
+
 ### 1.2 Regras de negócio materializadas
 
 - Itens inativados não aparecem em novas listas, mas seguem íntegros no histórico.
@@ -61,6 +72,7 @@ Nova interpretação do produto:
 - A ocorrência de um item na lista é contextual e guarda “snapshot” próprio.
 - A quantidade lançada na lista representa unidades compradas ou quantidade medida, conforme o modo do item.
 - O preço base é calculado dividindo o preço informado pelo conteúdo base de referência de cada modo de compra.
+- A edição de quantidade e preço no item da lista deve ser aplicada como uma única atualização lógica.
 - Uma lista concluída não pode mais ser alterada.
 - A finalização exige ao menos um item marcado como comprado.
 - Itens pendentes podem ser mantidos ou removidos no fechamento.
@@ -85,6 +97,7 @@ Nova interpretação do produto:
 - a escolha de unidade durante a compra deixou de ser um ajuste contextual, pois agora faz parte da definição do item do catálogo.
 - a categoria do item deixou de ser texto livre e passou a ser escolhida a partir de uma lista fixa do sistema.
 - itens fracionáveis passaram a aceitar quantidade decimal diretamente na medida de compra.
+- os itens da lista passaram a oferecer visualização colapsável para reduzir ruído visual em listas longas.
 
 ## 2. Pesquisa aplicada em melhores práticas Android
 
@@ -168,3 +181,4 @@ O repositório deve seguir Conventional Commits em PT-BR. Exemplos válidos:
 | 2026-03-08 | Regra de negócio | Inclusão do atributo `dimensão` no item do catálogo | Cadastro de item, snapshot da lista, cálculo de preço base e documentação |
 | 2026-03-09 | Regra de negócio | Categorias passaram a ser pré-definidas pelo sistema | Cadastro de item, padronização do catálogo, busca e rastreabilidade do produto |
 | 2026-03-09 | Regra de negócio | Itens passaram a suportar compra por medida variável, sem dimensão fixa | Cadastro de item, detalhamento da lista, cálculo de subtotal, normalização de preço e histórico |
+| 2026-03-09 | UX e consistência | Itens da lista passaram a ser colapsáveis e a atualização de quantidade/preço tornou-se atômica | Navegação em listas extensas, redução de inconsistências visuais e atualização imediata de subtotal |

@@ -87,6 +87,12 @@ class ShoppingListDetailViewModel @Inject constructor(
         }
     }
 
+    fun updatePricing(itemId: Long, quantity: Double, unitPrice: Double) {
+        executeMutation("Quantidade e preço atualizados.") {
+            shoppingListRepository.updatePricing(itemId, quantity, unitPrice)
+        }
+    }
+
     fun updateUnitPrice(itemId: Long, unitPrice: Double) {
         executeMutation("Preço unitário atualizado.") {
             shoppingListRepository.updateUnitPrice(itemId, unitPrice)

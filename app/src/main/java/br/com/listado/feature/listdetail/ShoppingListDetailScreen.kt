@@ -1,6 +1,7 @@
 package br.com.listado.feature.listdetail
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.ExpandLess
+import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
@@ -35,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,7 +53,7 @@ import br.com.listado.core.util.toBrazilianDoubleOrNull
 import br.com.listado.ui.components.CollectMessages
 import br.com.listado.ui.components.EmptyStateCard
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ShoppingListDetailScreen(
     onBack: () -> Unit,
@@ -145,8 +149,7 @@ fun ShoppingListDetailScreen(
                     canEdit = details.canEdit,
                     onUpdatePurchased = { checked -> viewModel.updatePurchased(entry.id, checked) },
                     onUpdate = { quantity, price ->
-                        viewModel.updateQuantity(entry.id, quantity)
-                        viewModel.updateUnitPrice(entry.id, price)
+                        viewModel.updatePricing(entry.id, quantity, price)
                     },
                     onRemove = { viewModel.removeItem(entry.id) },
                 )
@@ -178,7 +181,7 @@ fun ShoppingListDetailScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun ShoppingListEntryCard(
     entry: ShoppingListEntry,
@@ -187,8 +190,17 @@ private fun ShoppingListEntryCard(
     onUpdate: (Double, Double) -> Unit,
     onRemove: () -> Unit,
 ) {
+    var isExpanded by rememberSaveable(entry.id) { mutableStateOf(false) }
     var quantityText by remember(entry.id, entry.quantity) { mutableStateOf(entry.quantity.toString()) }
     var priceText by remember(entry.id, entry.unitPrice) { mutableStateOf(entry.unitPrice.toString()) }
+    val previewQuantity = quantityText.toBrazilianDoubleOrNull() ?: entry.quantity
+    val previewPrice = priceText.toBrazilianDoubleOrNull() ?: entry.unitPrice
+    val previewSubtotal = previewQuantity * previewPrice
+    val previewNormalizedPrice = if (entry.contentPerReferenceInBase > 0.0) {
+        previewPrice / entry.contentPerReferenceInBase
+    } else {
+        0.0
+    }
 
     Card {
         Column(
@@ -203,9 +215,17 @@ private fun ShoppingListEntryCard(
                     Text(text = entry.itemName, style = MaterialTheme.typography.titleMedium)
                     Text(text = entry.category, style = MaterialTheme.typography.bodyMedium)
                 }
-                if (canEdit) {
-                    IconButton(onClick = onRemove) {
-                        Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Remover item")
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    IconButton(onClick = { isExpanded = !isExpanded }) {
+                        Icon(
+                            imageVector = if (isExpanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                            contentDescription = if (isExpanded) "Recolher item" else "Expandir item",
+                        )
+                    }
+                    if (canEdit) {
+                        IconButton(onClick = onRemove) {
+                            Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Remover item")
+                        }
                     }
                 }
             }
@@ -215,27 +235,35 @@ private fun ShoppingListEntryCard(
                 Text(text = if (entry.isChecked) "Comprado" else "Pendente")
             }
 
-            AssistChip(
-                onClick = {},
-                label = {
-                    Text(
-                        text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
-                            "Dimensão por unidade: ${entry.itemDimension?.asDecimal().orEmpty()} ${entry.measurementUnit.label}"
-                        } else {
-                            "Compra por medida variável em ${entry.measurementUnit.label}"
-                        },
-                    )
-                },
-            )
-            AssistChip(
-                onClick = {},
-                label = {
-                    Text(text = "Preço base: ${entry.normalizedUnitPrice.asCurrency()} / ${entry.baseUnit.label}")
-                },
-            )
-            AssistChip(onClick = {}, label = { Text(text = "Subtotal: ${entry.subtotal.asCurrency()}") })
+            androidx.compose.foundation.layout.FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                AssistChip(
+                    onClick = { isExpanded = !isExpanded },
+                    label = {
+                        Text(
+                            text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                                "Dimensão por unidade: ${entry.itemDimension?.asDecimal().orEmpty()} ${entry.measurementUnit.label}"
+                            } else {
+                                "Compra por medida variável em ${entry.measurementUnit.label}"
+                            },
+                        )
+                    },
+                )
+                AssistChip(
+                    onClick = { isExpanded = !isExpanded },
+                    label = {
+                        Text(text = "Preço base: ${previewNormalizedPrice.asCurrency()} / ${entry.baseUnit.label}")
+                    },
+                )
+                AssistChip(
+                    onClick = { isExpanded = !isExpanded },
+                    label = { Text(text = "Subtotal: ${previewSubtotal.asCurrency()}") },
+                )
+            }
 
-            if (canEdit) {
+            if (isExpanded && canEdit) {
                 OutlinedTextField(
                     value = quantityText,
                     onValueChange = { quantityText = it },
@@ -293,6 +321,25 @@ private fun ShoppingListEntryCard(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(text = "Atualizar item")
+                }
+            } else if (isExpanded) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                            "Quantidade comprada: ${entry.quantity.asDecimal()} unidades"
+                        } else {
+                            "Quantidade comprada: ${entry.quantity.asDecimal()} ${entry.measurementUnit.label}"
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        text = if (entry.purchaseMode == ItemPurchaseMode.FIXED_DIMENSION) {
+                            "Preço informado: ${entry.unitPrice.asCurrency()} por unidade"
+                        } else {
+                            "Preço informado: ${entry.unitPrice.asCurrency()} por ${entry.measurementUnit.label}"
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                 }
             }
         }

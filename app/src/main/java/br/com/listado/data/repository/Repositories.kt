@@ -177,6 +177,20 @@ class ShoppingListRepository @Inject constructor(
         shoppingListDao.getById(current.listId)?.let { touchList(it) }
     }
 
+    suspend fun updatePricing(itemId: Long, quantity: Double, unitPrice: Double) {
+        require(quantity > 0.0) { "A quantidade deve ser maior que zero." }
+        require(unitPrice >= 0.0) { "O preço unitário não pode ser negativo." }
+
+        val current = editableEntry(itemId)
+        shoppingListItemDao.upsert(
+            current.copy(
+                quantity = quantity,
+                unitPrice = unitPrice,
+            ),
+        )
+        shoppingListDao.getById(current.listId)?.let { touchList(it) }
+    }
+
     suspend fun updateUnitPrice(itemId: Long, unitPrice: Double) {
         require(unitPrice >= 0.0) { "O preço unitário não pode ser negativo." }
         val current = editableEntry(itemId)
